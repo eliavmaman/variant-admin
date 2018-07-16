@@ -32,7 +32,7 @@
     "docs": "compodoc -p src/tsconfig.app.json -d docs",
     "docs:serve": "compodoc -p src/tsconfig.app.json -d docs -s",
     "test:coverage": "rimraf coverage && npm run test -- --code-coverage",
-    "postinstall": "ng build --aot --target=production"
+    "postinstall": "ng build --aot --prod"
   },
   "dependencies": {
     "@agm/core": "1.0.0-beta.2",
