@@ -10,16 +10,16 @@ export class SecurityCamerasComponent {
 
   cameras: any[] = [{
     title: 'Camera #1',
-    source: 'https://eye.variant.ai/cOxz0KrvaJesq9yqDc50ybnpmZL6cF/embed/2Df5hBE/X8FITn/jquery%7Cfullscreen',
+    source: 'http://eye.variant.ai/cOxz0KrvaJesq9yqDc50ybnpmZL6cF/embed/2Df5hBE/X8FITn/jquery%7Cfullscreen',
   }, {
     title: 'Camera #2',
-    source: 'https://eye.variant.ai/cOxz0KrvaJesq9yqDc50ybnpmZL6cF/embed/2Df5hBE/Demo/jquery%7Cfullscreen',
+    source: 'http://eye.variant.ai/cOxz0KrvaJesq9yqDc50ybnpmZL6cF/embed/2Df5hBE/Demo/jquery%7Cfullscreen',
   }, {
     title: 'Camera #3',
-    source: 'https://eye.variant.ai/cOxz0KrvaJesq9yqDc50ybnpmZL6cF/embed/2Df5hBE/XTBRDjf4um/jquery%7Cfullscreen',
+    source: 'http://eye.variant.ai/cOxz0KrvaJesq9yqDc50ybnpmZL6cF/embed/2Df5hBE/XTBRDjf4um/jquery%7Cfullscreen',
   }, {
     title: 'Camera #4',
-    source: 'https://eye.variant.ai/cOxz0KrvaJesq9yqDc50ybnpmZL6cF/embed/2Df5hBE/ZkEuo7mES8/jquery%7Cfullscreen',
+    source: 'http://eye.variant.ai/cOxz0KrvaJesq9yqDc50ybnpmZL6cF/embed/2Df5hBE/ZkEuo7mES8/jquery%7Cfullscreen',
   }];
 
   selectedCamera: any = this.cameras[0];

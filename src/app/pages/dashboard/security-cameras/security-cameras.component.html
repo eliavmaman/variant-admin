@@ -14,9 +14,10 @@
   </nb-card-header>
   <nb-card-body>
     <div class="cameras single-view" *ngIf="isSingleView">
-      <div class="camera" [style.background-image]="'url(' + selectedCamera.source + ')'">
-        <span>{{ selectedCamera.title }}</span>
-      </div>
+      <img class="camera" [src]="selectedCamera.source" alt="">
+      <!--<div class="camera" [style.background-image]="'url(' + selectedCamera.source + ')'">-->
+        <!--<span>{{ selectedCamera.title }}</span>-->
+      <!--</div>-->
     </div>
 
 
