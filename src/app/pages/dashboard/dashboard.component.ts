@@ -2,6 +2,7 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {DashboardService} from '../../service/dashboard-service';
 import {Observable} from 'rxjs/Observable';
 import {forkJoin} from 'rxjs/observable/forkJoin';
+import {NgZone} from "@angular/core";
 
 @Component({
   selector: 'ngx-dashboard',
@@ -9,32 +10,64 @@ import {forkJoin} from 'rxjs/observable/forkJoin';
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
+  summaryDescription:string='';
+  totalCriteriaCount: number = 0;
+  emotions: any[] = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'];
+  ageRanges: any[] = ['0-20', '20-40', '40+'];
+  gender: any[] = ['Male', 'Female'];
+  criteria = {gender: 'Male', emotion: 'Happy', ageRanges: this.ageRanges[0]};
+  chartsDummyGlobalData = {
+    gender: [100, 128],
+    age: [3, 12, 40],
+    emotion: [10, 13, 16, 8, 0, 0, 7],
+    total: 0
+  };
+
+  applyCriteria() {
+    let genderIndex = this.gender.indexOf(this.criteria.gender);
+    let emotionIndex = this.emotions.indexOf(this.criteria.emotion);
+    let ageIndex = this.ageRanges.indexOf(this.criteria.ageRanges);
+
+    this.totalCriteriaCount = (
+      this.chartsDummyGlobalData.gender[genderIndex] +
+      this.chartsDummyGlobalData.emotion[emotionIndex] +
+      this.chartsDummyGlobalData.age[ageIndex]
+    )
+
+    this.getDescription(ageIndex, emotionIndex, genderIndex);
+  }
+
+  getDescription(ageIndex, emotionIndex, genderIndex) {
+    this.summaryDescription =
+      this.criteria.gender + ' (' + this.chartsDummyGlobalData.gender[genderIndex] + ')' + ' - ' +
+      this.criteria.emotion + ' (' + this.chartsDummyGlobalData.emotion[emotionIndex] + ')' + ' - ' +
+      this.criteria.ageRanges + ' (' + this.chartsDummyGlobalData.age[ageIndex] + '): Total:' + this.totalCriteriaCount;
+  }
 
   cameras: any = [
-    {id: 'aaa', name: 'Kitchen'},
-    {id: 'bbb', name: 'Entrance'},
-    {id: 'ccc', name: 'Cashiers'},
-    {id: 'ddd', name: 'Food Court'}
+    {id: 1, name: 'Kitchen'},
+    {id: 2, name: 'Entrance'},
+    {id: 3, name: 'Cashiers'},
+    {id: 4, name: 'Food Court'}
   ];
 
-  selectedCamera: any = 'aaa';
+  selectedCamera: any = this.cameras[0].id;
   genderCamera = {
     labels: ['Male', 'Female'],
     datasets: [{
-      data: [100, 128],
-      //backgroundColor: [colors.primaryLight, colors.infoLight, colors.successLight],
+      data: this.chartsDummyGlobalData.gender
     }],
   };
   ageCamera = {
-    labels: ['0-20', '20-40', '40+'],
+    labels: this.ageRanges,
     datasets: [{
-      data: [3, 12, 40]
+      data: this.chartsDummyGlobalData.age
     }],
   };
   emotionCamera = {
     labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'],
     datasets: [{
-      data: [10, 13, 16, 8, 0, 0, 7]
+      data: this.chartsDummyGlobalData.emotion,
     }],
   };
   camData4 = {
@@ -44,8 +77,7 @@ export class DashboardComponent implements OnInit {
     }],
   };
 
-  constructor(private dashboardService: DashboardService) {
-
+  constructor(private dashboardService: DashboardService, private zone: NgZone) {
   }
 
   ngOnInit() {
@@ -91,6 +123,69 @@ export class DashboardComponent implements OnInit {
       //  this.camData4.datasets = [res[0].length, res[1].length, res[2].length];
     });
   }
+
+  onCameraSelected(camera) {
+    this.selectedCamera = camera;
+    this.zone.run(() => {
+      this.getRandomChartData();
+      this.applyCriteria();
+    });
+
+  }
+
+  getRandomChartData() {
+    this.chartsDummyGlobalData.age = [
+      this.getRandomNumber(),
+      this.getRandomNumber(),
+      this.getRandomNumber()
+    ];
+    this.chartsDummyGlobalData.gender = [this.getRandomNumber(), this.getRandomNumber()];
+    this.chartsDummyGlobalData.emotion = [this.getRandomNumber(),
+      this.getRandomNumber(),
+      this.getRandomNumber(),
+      this.getRandomNumber(),
+      this.getRandomNumber(),
+      this.getRandomNumber(),
+      this.getRandomNumber()];
+
+    this.genderCamera = {
+      labels: ['Male', 'Female'],
+      datasets: [{
+        data: this.chartsDummyGlobalData.gender
+      }],
+    };
+    this.ageCamera = {
+      labels: ['0-20', '20-40', '40+'],
+      datasets: [{
+        data: this.chartsDummyGlobalData.age
+      }],
+    };
+    this.emotionCamera = {
+      labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'],
+      datasets: [{
+        data: this.chartsDummyGlobalData.emotion,
+      }],
+    };
+
+    this.chartsDummyGlobalData.total = this.getTotalCount()
+
+  }
+
+  getRandomNumber() {
+
+    return Math.floor(Math.random() * (15 - 0 + 1));
+
+  }
+
+  getTotalCount() {
+    if (!this.chartsDummyGlobalData) return;
+    var t_age = this.chartsDummyGlobalData.age.reduce((a, b) => a + b, 0);
+    var t_gender = this.chartsDummyGlobalData.gender.reduce((a, b) => a + b, 0);
+    var t_emotion = this.chartsDummyGlobalData.emotion.reduce((a, b) => a + b, 0);
+    return (t_emotion + t_age + t_gender);
+  }
+
+
 }
 
 // import {Component, OnDestroy} from '@angular/core';

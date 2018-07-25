@@ -5,8 +5,8 @@ import {NbJSThemeVariable} from '@nebular/theme/services/js-themes/theme.options
 @Component({
   selector: 'ngx-chartjs-pie',
   template: `
-        <chart type="pie" [data]="chartData" [options]="options"></chart>
-    `,
+    <chart type="pie" [data]="chartData" [options]="options"></chart>
+  `,
 })
 export class ChartjsPieComponent implements OnDestroy, OnChanges {
   @Input() chartData: any;
@@ -23,7 +23,10 @@ export class ChartjsPieComponent implements OnDestroy, OnChanges {
         this.c_colors.infoLight,
         this.c_colors.dangerLight,
         this.c_colors.successLight,
-        this.c_colors.primaryLight];
+        this.c_colors.primaryLight,
+        'gray',
+        'black'
+      ];
       this.chartData.datasets[0].backgroundColor = c;
     });
   }

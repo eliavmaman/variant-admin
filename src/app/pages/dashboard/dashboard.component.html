@@ -1,14 +1,63 @@
 <div class="row">
-  <div class="col-sm-4">
+  <div class="col-4">
     <label>Please select Camera</label>
-    <select class="form-control" [(ngModel)]="selectedCamera">
+    <select class="form-control" [(ngModel)]="selectedCamera" (ngModelChange)="onCameraSelected($event)">
       <option *ngFor="let c of cameras; let i = index" [attr.data-index]="i" value="{{c.id}}">
         {{c.name}}
       </option>
     </select>
-  </div>
+    <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+       aria-controls="collapseExample">
+      Advanced Criteria
+    </a>
 
+  </div>
+  <div class="col-8">
+    <label>Summary</label>
+    <div class="card card-body" style="    height: 45px;
+    margin-top: 2px;
+    font-size: 16px;
+    padding: 11px;
+    color: black;">
+      {{summaryDescription}}
+    </div>
+  </div>
 </div>
+<div class="collapse" id="collapseExample">
+  <div class="card card-body">
+    <div class="row">
+      <div class="col-3">
+        <label>Please select gender</label>
+        <select class="form-control" [(ngModel)]="criteria.gender">
+          <option *ngFor="let g of gender" value="{{g}}" [attr.data-index]="i">{{g}}</option>
+        </select>
+      </div>
+      <div class="col-3">
+        <label>Please select emotion</label>
+        <select class="form-control" [(ngModel)]="criteria.emotion">
+          <option *ngFor="let e of emotions; let i = index" [attr.data-index]="i" value="{{e}}">
+            {{e}}
+          </option>
+        </select>
+      </div>
+      <div class="col-3">
+        <label>Please select age range</label>
+        <select class="form-control" [(ngModel)]="criteria.ageRange">
+          <option *ngFor="let a of ageRanges; let i = index" [attr.data-index]="i" value="{{a}}">
+            {{a}}
+          </option>
+        </select>
+      </div>
+      <div class="col-3">
+        <label style="color: transparent;">AAAA</label>
+        <div>
+          <button class="btn btn-primary" (click)="applyCriteria()">Go</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row" style="margin-top: 10px">
   <div class="col-lg-6">
     <nb-card>
@@ -43,50 +92,50 @@
 
 <div class="row">
   <div class="col-lg-12 col-lg-12 col-md-7">
-    <ngx-security-cameras></ngx-security-cameras>
+    <ngx-security-cameras [selectedCamera]="selectedCamera"></ngx-security-cameras>
   </div>
 </div>
 
 <!--<div class="row">-->
-  <!--<div class="col-xxxl-3 col-md-6" *ngFor="let statusCard of statusCards">-->
-    <!--<ngx-status-card [title]="statusCard.title"-->
-                     <!--[type]="statusCard.type">-->
-      <!--<i [ngClass]="statusCard.iconClass"></i>-->
-    <!--</ngx-status-card>-->
-  <!--</div>-->
+<!--<div class="col-xxxl-3 col-md-6" *ngFor="let statusCard of statusCards">-->
+<!--<ngx-status-card [title]="statusCard.title"-->
+<!--[type]="statusCard.type">-->
+<!--<i [ngClass]="statusCard.iconClass"></i>-->
+<!--</ngx-status-card>-->
+<!--</div>-->
 <!--</div>-->
 
 <!--<div class="row">-->
-  <!--<div class="col-xxxl-3 col-xxl-4 col-lg-5 col-md-6">-->
-    <!--<ngx-temperature></ngx-temperature>-->
-  <!--</div>-->
+<!--<div class="col-xxxl-3 col-xxl-4 col-lg-5 col-md-6">-->
+<!--<ngx-temperature></ngx-temperature>-->
+<!--</div>-->
 
-  <!--<div class="col-xxxl-9 col-xxl-8 col-lg-7 col-md-6">-->
-    <!--<ngx-electricity></ngx-electricity>-->
-  <!--</div>-->
+<!--<div class="col-xxxl-9 col-xxl-8 col-lg-7 col-md-6">-->
+<!--<ngx-electricity></ngx-electricity>-->
+<!--</div>-->
 <!--</div>-->
 
 <!--<div class="row">-->
-  <!--<div class="col-xxxl-9 col-xl-12">-->
-    <!--<ngx-rooms></ngx-rooms>-->
-  <!--</div>-->
+<!--<div class="col-xxxl-9 col-xl-12">-->
+<!--<ngx-rooms></ngx-rooms>-->
+<!--</div>-->
 
-  <!--<div class="col-xxxl-3 col-xxl-4 col-lg-7 col-md-6">-->
-    <!--<ngx-contacts></ngx-contacts>-->
-  <!--</div>-->
+<!--<div class="col-xxxl-3 col-xxl-4 col-lg-7 col-md-6">-->
+<!--<ngx-contacts></ngx-contacts>-->
+<!--</div>-->
 
-  <!--<div class="col-xxxl-3 col-xxl-4 col-lg-5 col-md-6">-->
-    <!--<ngx-solar [chartValue]="72"></ngx-solar>-->
+<!--<div class="col-xxxl-3 col-xxl-4 col-lg-5 col-md-6">-->
+<!--<ngx-solar [chartValue]="72"></ngx-solar>-->
 
-    <!--<ngx-kitten></ngx-kitten>-->
-  <!--</div>-->
+<!--<ngx-kitten></ngx-kitten>-->
+<!--</div>-->
 
-  <!--<div class="col-xxxl-3 col-xxl-4 col-md-5">-->
-    <!--<ngx-traffic></ngx-traffic>-->
-    <!--<ngx-weather></ngx-weather>-->
-  <!--</div>-->
+<!--<div class="col-xxxl-3 col-xxl-4 col-md-5">-->
+<!--<ngx-traffic></ngx-traffic>-->
+<!--<ngx-weather></ngx-weather>-->
+<!--</div>-->
 
-  <!--<div class="col-xxxl-6 col-xxl-12 col-md-7">-->
-    <!--<ngx-security-cameras></ngx-security-cameras>-->
-  <!--</div>-->
+<!--<div class="col-xxxl-6 col-xxl-12 col-md-7">-->
+<!--<ngx-security-cameras></ngx-security-cameras>-->
+<!--</div>-->
 <!--</div>-->

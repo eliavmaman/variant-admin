@@ -14,18 +14,17 @@
   </nb-card-header>
   <nb-card-body>
     <div class="cameras single-view" *ngIf="isSingleView">
-      <img class="camera" [src]="selectedCamera.source" alt="">
-      <!--<div class="camera" [style.background-image]="'url(' + selectedCamera.source + ')'">-->
-        <!--<span>{{ selectedCamera.title }}</span>-->
-      <!--</div>-->
+      <!--<img class="camera" [src]="selectedCamera.source" alt="">-->
+
+      <iframe width="100%" height="100%" border-color="1px solid black" [src]="currentCamera | safe" frameborder="0"
+              allow="autoplay; encrypted-media" allowfullscreen></iframe>
+      <!--<img class="camera" [src]="currentCamera | safe" alt="">-->
+
     </div>
 
 
     <div class="cameras" *ngIf="!isSingleView">
-      <!--<div class="camera col-sm-6" *ngFor="let camera of cameras" [style.background-image]="'url(' + camera.source + ')'"-->
-      <!--(click)="selectCamera(camera)">-->
-      <!--<span>{{ camera.title }}</span>-->
-      <!--</div>-->
+
       <div class="camera col-sm-6" *ngFor="let camera of cameras">
         <iframe width="100%" height="100%" border-color="1px solid black" [src]="camera.source | safe" frameborder="0"
                 allow="autoplay; encrypted-media" allowfullscreen></iframe>
