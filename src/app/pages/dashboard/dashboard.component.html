@@ -42,7 +42,7 @@
       </div>
       <div class="col-3">
         <label>Please select age range</label>
-        <select class="form-control" [(ngModel)]="criteria.ageRange">
+        <select class="form-control" [(ngModel)]="criteria.ageRanges">
           <option *ngFor="let a of ageRanges; let i = index" [attr.data-index]="i" value="{{a}}">
             {{a}}
           </option>
