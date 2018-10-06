@@ -15,7 +15,7 @@ export class SecurityCamerasComponent {
   cameras: any[] = [{
     id: 1,
     title: 'Camera #1',
-    source: 'https://cdn.shinobi.video/videos/people.mp4'
+    source: 'https://cdn.shinobi.video/videos/people.mp4?autoplay=1&loop=1'
     //source: 'http://eye.variant.ai/cOxz0KrvaJesq9yqDc50ybnpmZL6cF/embed/2Df5hBE/X8FITn/jquery%7Cfullscreen',
   }, {
     id: 2,
