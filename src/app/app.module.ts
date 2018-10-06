@@ -17,6 +17,7 @@ import { ThemeModule } from './@theme/theme.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import {DashboardService} from "./service/dashboard-service";
 import {TestPipe} from "./test.pipe";
+import {BlockUIModule} from "ng-block-ui";
 
 @NgModule({
   declarations: [AppComponent,TestPipe],
@@ -29,6 +30,9 @@ import {TestPipe} from "./test.pipe";
     NgbModule.forRoot(),
     ThemeModule.forRoot(),
     CoreModule.forRoot(),
+    BlockUIModule.forRoot({
+      message: 'Loading...'
+    })
   ],
   bootstrap: [AppComponent],
   providers: [

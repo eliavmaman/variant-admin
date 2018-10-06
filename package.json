@@ -83,7 +83,9 @@
     "typeface-exo": "0.0.22",
     "typescript": "2.7.2",
     "web-animations-js": "2.2.5",
-    "zone.js": "^0.8.26"
+    "zone.js": "^0.8.26",
+    "ng-block-ui": "^1.0.6",
+    "ng2-daterangepicker": "^2.0.12"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.6.0",

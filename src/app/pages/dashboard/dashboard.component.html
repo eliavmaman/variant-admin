@@ -1,16 +1,8 @@
 <div class="row">
-  <div class="col-4">
-    <label>Please select Camera</label>
-    <select class="form-control" [(ngModel)]="selectedCamera" (ngModelChange)="onCameraSelected($event)">
-      <option *ngFor="let c of cameras; let i = index" [attr.data-index]="i" value="{{c.id}}">
-        {{c.name}}
-      </option>
-    </select>
-    <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
-       aria-controls="collapseExample">
-      Advanced Criteria
-    </a>
-
+  <div class="col-sm-4">
+    <label>Please select date range</label>
+    <input type="text" class="form-control" name="daterangeInput" daterangepicker [options]="options"
+           (selected)="selectedDate($event, daterange)"/>
   </div>
   <div class="col-8">
     <label>Summary</label>
@@ -22,6 +14,28 @@
       {{summaryDescription}}
     </div>
   </div>
+
+</div>
+<div class="row">
+  <div class="col-sm-4">
+    <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"
+       aria-controls="collapseExample">
+      Advanced Criteria
+    </a>
+  </div>
+</div>
+<div class="row">
+  <!--<div class="col-4">-->
+  <!--<label>Please select Camera</label>-->
+  <!--<select class="form-control" [(ngModel)]="selectedCamera" (ngModelChange)="onCameraSelected($event)">-->
+  <!--<option *ngFor="let c of cameras; let i = index" [attr.data-index]="i" value="{{c.id}}">-->
+  <!--{{c.name}}-->
+  <!--</option>-->
+  <!--</select>-->
+
+
+  <!--</div>-->
+
 </div>
 <div class="collapse" id="collapseExample">
   <div class="card card-body">
@@ -29,12 +43,16 @@
       <div class="col-3">
         <label>Please select gender</label>
         <select class="form-control" [(ngModel)]="criteria.gender">
+          <option>None</option>
+          <option>All</option>
           <option *ngFor="let g of gender" value="{{g}}" [attr.data-index]="i">{{g}}</option>
         </select>
       </div>
       <div class="col-3">
         <label>Please select emotion</label>
         <select class="form-control" [(ngModel)]="criteria.emotion">
+          <option>None</option>
+          <option>All</option>
           <option *ngFor="let e of emotions; let i = index" [attr.data-index]="i" value="{{e}}">
             {{e}}
           </option>
@@ -43,6 +61,8 @@
       <div class="col-3">
         <label>Please select age range</label>
         <select class="form-control" [(ngModel)]="criteria.ageRanges">
+          <option>None</option>
+          <option>All</option>
           <option *ngFor="let a of ageRanges; let i = index" [attr.data-index]="i" value="{{a}}">
             {{a}}
           </option>
@@ -61,7 +81,11 @@
 <div class="row" style="margin-top: 10px">
   <div class="col-lg-6">
     <nb-card>
-      <nb-card-header>Gender</nb-card-header>
+      <nb-card-header>Gender
+        <div class="row" [(ngModel)]="gender" style="float: right"> Total: Male:{{this.chartsDummyGlobalData.gender[0]}}
+          Female:{{this.chartsDummyGlobalData.gender[1]}}
+        </div>
+      </nb-card-header>
       <nb-card-body>
         <ngx-chartjs-pie #cam1 [chartData]="genderCamera"></ngx-chartjs-pie>
       </nb-card-body>
@@ -87,6 +111,16 @@
     </nb-card>
   </div>
 
+  <div class="col-lg-12">
+    <nb-card>
+      <nb-card-header>Account</nb-card-header>
+      <nb-card-body>
+
+
+        <ngx-chartjs-bar-horizontal></ngx-chartjs-bar-horizontal>
+      </nb-card-body>
+    </nb-card>
+  </div>
 
 </div>
 

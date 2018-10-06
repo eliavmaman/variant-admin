@@ -6,6 +6,18 @@ export class DashboardService {
   constructor(private http: HttpClient) {
 
   }
+  herokuUrl = 'https://variant-ai-server.herokuapp.com';
+  local = "http://localhost:3000";
+
+  getDetedctions(from: any, to: any) {
+
+    return this.http.get(this.herokuUrl + '/api/detections', {
+      params: {
+        fromDate: from.toISOString(),
+        toDate: to.toISOString()
+      }// observe: 'response'
+    });
+  }
 
   getGender1() {
     return this.http.get('http://51.15.209.55:8002/api/getGender/demo1');//.subscribe((res: any) => {return res.data;})

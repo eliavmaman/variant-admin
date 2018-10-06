@@ -20,14 +20,16 @@ import { SolarComponent } from './solar/solar.component';
 import { PlayerComponent } from './rooms/player/player.component';
 import { TrafficComponent } from './traffic/traffic.component';
 import { TrafficChartComponent } from './traffic/traffic-chart.component';
-import {ChartsModule} from "../charts/charts.module";
+import {ChartsModule} from '../charts/charts.module';
+import {Daterangepicker} from "ng2-daterangepicker";
 
 
 @NgModule({
   imports: [
     ThemeModule,
     NgxEchartsModule,
-    ChartsModule
+    ChartsModule,
+    Daterangepicker
   ],
   declarations: [
     DashboardComponent,
@@ -46,7 +48,7 @@ import {ChartsModule} from "../charts/charts.module";
     PlayerComponent,
     SolarComponent,
     TrafficComponent,
-    TrafficChartComponent,
+    TrafficChartComponent
   ],
 })
 export class DashboardModule { }

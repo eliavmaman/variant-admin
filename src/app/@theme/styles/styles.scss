@@ -29,3 +29,6 @@
   }
   @include bootstrap-rtl();
 };
+.daterangepicker_input input.form-control{
+  background-color: #fff !important;
+}
