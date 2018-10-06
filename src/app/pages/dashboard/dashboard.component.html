@@ -43,16 +43,14 @@
       <div class="col-3">
         <label>Please select gender</label>
         <select class="form-control" [(ngModel)]="criteria.gender">
-          <option>None</option>
-          <option>All</option>
+
           <option *ngFor="let g of gender" value="{{g}}" [attr.data-index]="i">{{g}}</option>
         </select>
       </div>
       <div class="col-3">
         <label>Please select emotion</label>
         <select class="form-control" [(ngModel)]="criteria.emotion">
-          <option>None</option>
-          <option>All</option>
+
           <option *ngFor="let e of emotions; let i = index" [attr.data-index]="i" value="{{e}}">
             {{e}}
           </option>
@@ -61,8 +59,7 @@
       <div class="col-3">
         <label>Please select age range</label>
         <select class="form-control" [(ngModel)]="criteria.ageRanges">
-          <option>None</option>
-          <option>All</option>
+
           <option *ngFor="let a of ageRanges; let i = index" [attr.data-index]="i" value="{{a}}">
             {{a}}
           </option>

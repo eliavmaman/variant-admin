@@ -18,9 +18,9 @@ export class DashboardComponent implements OnInit {
   @BlockUI() blockUI: NgBlockUI;
   summaryDescription: string = '';
   totalCriteriaCount: number = 0;
-  emotions: any[] = ['All', 'Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'];
-  ageRanges: any[] = ['All', '0-20', '20-40', '40+'];
-  gender: any[] = ['All', 'Male', 'Female'];
+  emotions: any[] = ['All', 'None', 'Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'];
+  ageRanges: any[] = ['All', 'None', '0-20', '20-40', '40+'];
+  gender: any[] = ['All', 'None', 'Male', 'Female'];
   criteria = {gender: 'All', emotion: 'All', ageRanges: 'All'};
   chartsDummyGlobalData = {
     gender: [],
@@ -28,6 +28,10 @@ export class DashboardComponent implements OnInit {
     emotion: [],
     total: 0
   };
+
+  totalGender = 0;
+  totalAge = 0;
+  totalEmotion = 0;
   detections: any[] = [];
   people: any = [];
   public daterange: any = {};
@@ -303,6 +307,8 @@ export class DashboardComponent implements OnInit {
     if (this.criteria.ageRanges != 'None') {
       str += 'Age (' + (ageTotal || 'Not detected') + '), ';
     }
+
+    str += ' - Total people detected in frame: ' + this.people.length;
 
 
     this.summaryDescription = str;
