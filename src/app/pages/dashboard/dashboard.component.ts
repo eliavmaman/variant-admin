@@ -5,6 +5,7 @@ import {forkJoin} from 'rxjs/observable/forkJoin';
 import {NgZone} from "@angular/core";
 import * as moment from 'moment';
 import {BlockUI, NgBlockUI} from 'ng-block-ui';
+import {DaterangePickerComponent} from "ng2-daterangepicker";
 
 @Component({
   selector: 'ngx-dashboard',
@@ -12,6 +13,8 @@ import {BlockUI, NgBlockUI} from 'ng-block-ui';
   templateUrl: './dashboard.component.html',
 })
 export class DashboardComponent implements OnInit {
+  @ViewChild(DaterangePickerComponent)
+  private picker: DaterangePickerComponent;
   @BlockUI() blockUI: NgBlockUI;
   summaryDescription: string = '';
   totalCriteriaCount: number = 0;
@@ -33,8 +36,8 @@ export class DashboardComponent implements OnInit {
   // can also be setup using the config service to apply to multiple pickers
   public options: any = {
     locale: {format: 'DD-MM-YYYY HH:mm'},
-    startDate: moment().format('DD-MM-YYYY HH:mm'),
-    endDate: moment().format('DD-MM-YYYY HH:mm'),
+    // startDate: moment().subtract(1, 'hours').format('DD-MM-YYYY HH:mm'),
+    // endDate: moment().format('DD-MM-YYYY HH:mm'),
     timePicker: true,
     timePicker24Hour: true,
     alwaysShowCalendars: false
@@ -54,7 +57,11 @@ export class DashboardComponent implements OnInit {
     this.daterange.label = value.label;
 
     this.blockUI.start('Loading...');
-    this.dashboardService.getDetedctions(this.daterange.start, this.daterange.end).subscribe((res: any) => {
+    this.getDetectionsByTimeFrame(this.daterange.start, this.daterange.end);
+  }
+
+  private getDetectionsByTimeFrame(from, to) {
+    this.dashboardService.getDetedctions(from, to).subscribe((res: any) => {
       this.detections = res;
 
       let peoples = {};
@@ -343,6 +350,16 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit() {
 
+  }
+
+  ngAfterViewInit() {
+    let from = moment().subtract(1, 'hours');
+    let to = moment();
+    this.picker.datePicker.setStartDate(from.format('DD-MM-YYYY HH:mm'));
+
+    this.picker.datePicker.setEndDate(to.format('DD-MM-YYYY HH:mm'));
+    this.blockUI.start('Loading...');
+    this.getDetectionsByTimeFrame(from, to);
   }
 
   onCameraSelected(camera) {
