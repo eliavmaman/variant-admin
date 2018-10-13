@@ -9,6 +9,7 @@
       "@angular/*": [
         "../node_modules/@angular/*"
       ],
+      "socket.io-client": ["../node_modules/socket.io-client/dist/socket.io.slim.js"],
       "@nebular/*": [
         "../node_modules/@nebular/*"
       ]

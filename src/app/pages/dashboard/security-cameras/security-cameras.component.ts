@@ -2,6 +2,7 @@ import {Component} from '@angular/core';
 import {Input} from "@angular/core";
 import {SimpleChanges} from "@angular/core";
 import * as _ from 'lodash';
+import * as $ from "jquery";
 
 
 @Component({
@@ -11,11 +12,13 @@ import * as _ from 'lodash';
 })
 export class SecurityCamerasComponent {
   @Input() selectedCamera: string;
+  @Input() selectedTimeFrameVideos: string[] = [];
   currentCamera: string;
+  selectedStream: string = '';
   cameras: any[] = [{
     id: 1,
     title: 'Camera #1',
-    source: 'https://cdn.shinobi.video/videos/people.mp4?autoplay=1&loop=1'
+    source: this.selectedStream//'https://cdn.shinobi.video/videos/people.mp4?autoplay=1&loop=1'
     //source: 'http://eye.variant.ai/cOxz0KrvaJesq9yqDc50ybnpmZL6cF/embed/2Df5hBE/X8FITn/jquery%7Cfullscreen',
   }, {
     id: 2,
@@ -32,8 +35,21 @@ export class SecurityCamerasComponent {
   }];
 
   ngOnChanges(changes: SimpleChanges) {
+    if (changes.selectedCamera) {
+      this.setSelectedCamera(changes.selectedCamera.currentValue);
+    }
+    if (changes.selectedTimeFrameVideos &&
+      (changes.selectedTimeFrameVideos.currentValue && changes.selectedTimeFrameVideos.previousValue) &&
+      changes.selectedTimeFrameVideos.currentValue[0] != changes.selectedTimeFrameVideos.previousValue[0]) {
+      this.selectedStream = 'http://51.15.77.204' + changes.selectedTimeFrameVideos.currentValue[0].href;
 
-    this.setSelectedCamera(changes.selectedCamera.currentValue);
+      this.currentCamera = this.selectedStream;
+
+      //$('#myVideo').get(0).play();
+
+
+    }
+
     // You can also use categoryId.previousValue and
     // categoryId.firstChange for comparing old and new values
 

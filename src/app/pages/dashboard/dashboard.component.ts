@@ -1,11 +1,13 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {DashboardService} from '../../service/dashboard-service';
+import {SocketService} from '../../service/socket-service';
 import {Observable} from 'rxjs/Observable';
 import {forkJoin} from 'rxjs/observable/forkJoin';
 import {NgZone} from "@angular/core";
 import * as moment from 'moment';
 import {BlockUI, NgBlockUI} from 'ng-block-ui';
 import {DaterangePickerComponent} from "ng2-daterangepicker";
+import * as $ from "jquery";
 
 @Component({
   selector: 'ngx-dashboard',
@@ -16,6 +18,7 @@ export class DashboardComponent implements OnInit {
   @ViewChild(DaterangePickerComponent)
   private picker: DaterangePickerComponent;
   @BlockUI() blockUI: NgBlockUI;
+  interval: any;
   summaryDescription: string = '';
   totalCriteriaCount: number = 0;
   emotions: any[] = ['All', 'None', 'Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'];
@@ -34,6 +37,7 @@ export class DashboardComponent implements OnInit {
   totalEmotion = 0;
   detections: any[] = [];
   people: any = [];
+  selectedTimeFrameVideos = [];
   public daterange: any = {};
 
   // see original project for full list of options
@@ -48,6 +52,8 @@ export class DashboardComponent implements OnInit {
   };
 
   public selectedDate(value: any, datepicker?: any) {
+    if (this.interval)
+      clearInterval(this.interval);
     // this is the date the iser selected
     console.log(value);
     this.people = [];
@@ -61,155 +67,198 @@ export class DashboardComponent implements OnInit {
     this.daterange.label = value.label;
 
     this.blockUI.start('Loading...');
-    this.getDetectionsByTimeFrame(this.daterange.start, this.daterange.end);
+    this.dashboardService.getFramesByDate(this.daterange.start, this.daterange.end).subscribe((res: any) => {
+      this.selectedTimeFrameVideos = res.videos;
+      let start = res.videos[0].time;
+      let end = res.videos[0].end;
+      this.getDetectionsByTimeFrame(start, end);
+    });
+
+
+  }
+
+  getDetectionDetails(detectionDetails: any, counter: any) {
+    if (this.detections.length == 0) return [];
+    detectionDetails = [];
+    let dd = this.detections[counter].detections;
+    for (let i = 0; i < dd.length; i++) {
+      detectionDetails.push(dd[i].bbox_xywh);
+    }
+
+    return detectionDetails;
   }
 
   private getDetectionsByTimeFrame(from, to) {
     this.dashboardService.getDetedctions(from, to).subscribe((res: any) => {
-      this.detections = res;
-
-      let peoples = {};
-      res.forEach((d) => {
-
-        d.detections.forEach((det) => {
-
-          var pid = det.object.split(' ')[1];
-          if (peoples[pid]) {
-            peoples[pid].gender = det.gender.length == 0 ? peoples[pid].gender : det.gender;
-            peoples[pid].emotions.push(det.emotion);
-            peoples[pid].confidences.push(det.confidence);
-          } else {
-            peoples[pid] = {};
-            peoples[pid].gender = det.gender;
-            peoples[pid].emotions = [det.emotion];
-            peoples[pid].confidences = [det.confidence];
-          }
-        });
-
-
-      });
-
-      for (var property in peoples) {
-        if (peoples.hasOwnProperty(property)) {
-          peoples[property].confidence = getAvgConf(peoples[property]);
-          peoples[property].emotion = getAvgEmotion(peoples[property].emotions);
-        }
+      let counter = 0;
+      this.detections = res.reverse();
+      let detectionDetails = [];
+      let $box = $('#sec-camera');
+      let bWidth = $box.width();
+      let bHeight = $box.height();
+      this.blockUI.stop();
+      if (this.detections.length == 0) {
+        return;
       }
-//                peoples.forEach((p) => {
-//                    p.confidence = getAvgConf(p);
-//                    p.emotion = getAvgEmotion(p.emotions);
-//                });
+      this.interval = setInterval(() => {
+        detectionDetails = this.getDetectionDetails(detectionDetails, counter);
+        counter++;
+        $box.find('.bb').remove();
+        let div = '';
+        for (let i = 0; i < detectionDetails.length; i++) {
 
-      function getAvgConf(p) {
-        var sum = 0;
-        for (var i = 0; i < p.confidences.length; i++) {
-          sum += parseFloat(p.confidences[i]);
+          div += '<div class="bb" style="width:' + detectionDetails[i][2] +
+            'px;height:' + detectionDetails[i][3] + 'px;top:' + detectionDetails[i][1] + 'px;left:' + detectionDetails[i][0] + 'px;">' +
+            '<div style="position: absolute;top:-20px;background-color: green">Person</div>' +
+            '</div>';
+
         }
-
-        var avg = sum / p.confidences.length;
-
-        return avg;
-      }
-
-      function getAvgEmotion(array) {
-        if (array.length == 0)
-          return null;
-        var modeMap = {};
-        var maxEl = array[0], maxCount = 1;
-        for (var i = 0; i < array.length; i++) {
-          var el = array[i];
-          if (modeMap[el] == null)
-            modeMap[el] = 1;
-          else
-            modeMap[el]++;
-          if (modeMap[el] > maxCount) {
-            maxEl = el;
-            maxCount = modeMap[el];
-          }
-        }
-        return maxEl;
-      }
-
-      for (var key in peoples) {
-        var obj = peoples[key];
-        this.people.push(obj);
-      }
-      let tempData: any = {
-        age: [],
-        gender: [],
-        emotion: [],
-        total: 0
-      };
-
-      this.people.forEach((p) => {
-        tempData.age.push(p.age);
-        tempData.gender.push(p.gender);
-        tempData.emotion.push(p.emotion);
-      });
-
-      let realData: any = {
-        age: this.getChartObjectCount(tempData.age),
-        gender: this.getChartObjectCount(tempData.gender),
-        emotion: this.getChartObjectCount(tempData.emotion)
-      };
+        $box.append(div)
+      }, 1000);
 
 
-      //'Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'
-
-      this.zone.run(() => {
-        this.chartsDummyGlobalData = {
-          gender: [],
-          age: [],
-          emotion: [],
-          total: 0
-          // gender: [100, 128],
-          // age: [3, 12, 40],
-          // emotion: [10, 13, 16, 8, 0, 0, 7],
-          // total: 0
-        };
-        for (let prop in realData.age) {
-          this.chartsDummyGlobalData.age.push(
-            prop ? realData[prop] : 0);
-        }
-
-        this.chartsDummyGlobalData.gender = [
-          realData.gender['man'] || 0,
-          realData.gender['woman'] || 0
-        ];
-
-        this.chartsDummyGlobalData.emotion = [
-          realData.emotion['angry'] || 0,
-          realData.emotion['disgust'] || 0,
-          realData.emotion['fear'] || 0,
-          realData.emotion['happy'] || 0,
-          realData.emotion['neutral'] || 0,
-          realData.emotion['sad'] || 0,
-          realData.emotion['surprise'] || 0
-        ];
-
-        this.genderCamera = {
-          labels: ['Male', 'Female'],
-          datasets: [{
-            data: this.chartsDummyGlobalData.gender
-          }],
-        };
-        this.ageCamera = {
-          labels: ['0-20', '20-40', '40+'],
-          datasets: [{
-            data: this.chartsDummyGlobalData.age
-          }],
-        };
-        this.emotionCamera = {
-          labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'],
-          datasets: [{
-            data: this.chartsDummyGlobalData.emotion,
-          }],
-        };
-        this.applyCriteria();
-        this.chartsDummyGlobalData.total = this.getTotalCount();
-
-        this.blockUI.stop();
-      });
+      // let peoples = {};
+      // res.forEach((d) => {
+      //
+      //   d.detections.forEach((det) => {
+      //
+      //     var pid = det.object.split(' ')[1];
+      //     if (peoples[pid]) {
+      //       peoples[pid].gender = det.gender.length == 0 ? peoples[pid].gender : det.gender;
+      //       peoples[pid].emotions.push(det.emotion);
+      //       peoples[pid].confidences.push(det.confidence);
+      //     } else {
+      //       peoples[pid] = {};
+      //       peoples[pid].gender = det.gender;
+      //       peoples[pid].emotions = [det.emotion];
+      //       peoples[pid].confidences = [det.confidence];
+      //     }
+      //   });
+      //
+      //
+      // });
+      //
+      // for (let property in peoples) {
+      //   if (peoples.hasOwnProperty(property)) {
+      //     peoples[property].confidence = getAvgConf(peoples[property]);
+      //     peoples[property].emotion = getAvgEmotion(peoples[property].emotions);
+      //   }
+      // }
+      //
+      // function getAvgConf(p) {
+      //   let sum = 0;
+      //   for (let i = 0; i < p.confidences.length; i++) {
+      //     sum += parseFloat(p.confidences[i]);
+      //   }
+      //
+      //   let avg = sum / p.confidences.length;
+      //
+      //   return avg;
+      // }
+      //
+      // function getAvgEmotion(array) {
+      //   if (array.length == 0)
+      //     return null;
+      //   let modeMap = {};
+      //   let maxEl = array[0], maxCount = 1;
+      //   for (let i = 0; i < array.length; i++) {
+      //     let el = array[i];
+      //     if (modeMap[el] == null)
+      //       modeMap[el] = 1;
+      //     else
+      //       modeMap[el]++;
+      //     if (modeMap[el] > maxCount) {
+      //       maxEl = el;
+      //       maxCount = modeMap[el];
+      //     }
+      //   }
+      //   return maxEl;
+      // }
+      //
+      // for (let key in peoples) {
+      //   let obj = peoples[key];
+      //   this.people.push(obj);
+      // }
+      //
+      // let tempData: any = {
+      //   age: [],
+      //   gender: [],
+      //   emotion: [],
+      //   total: 0
+      // };
+      //
+      // this.people.forEach((p) => {
+      //   tempData.age.push(p.age);
+      //   tempData.gender.push(p.gender);
+      //   tempData.emotion.push(p.emotion);
+      // });
+      //
+      // let realData: any = {
+      //   age: this.getChartObjectCount(tempData.age),
+      //   gender: this.getChartObjectCount(tempData.gender),
+      //   emotion: this.getChartObjectCount(tempData.emotion)
+      // };
+      //
+      // //'Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'
+      //
+      // this.zone.run(() => {
+      //   this.chartsDummyGlobalData = {
+      //     gender: [],
+      //     age: [],
+      //     emotion: [],
+      //     total: 0
+      //     // gender: [100, 128],
+      //     // age: [3, 12, 40],
+      //     // emotion: [10, 13, 16, 8, 0, 0, 7],
+      //     // total: 0
+      //   };
+      //   for (let prop in realData.age) {
+      //     this.chartsDummyGlobalData.age.push(
+      //       prop ? realData[prop] : 0);
+      //   }
+      //
+      //   this.chartsDummyGlobalData.gender = [
+      //     realData.gender['man'] || 0,
+      //     realData.gender['woman'] || 0
+      //   ];
+      //
+      //   this.chartsDummyGlobalData.emotion = [
+      //     realData.emotion['angry'] || 0,
+      //     realData.emotion['disgust'] || 0,
+      //     realData.emotion['fear'] || 0,
+      //     realData.emotion['happy'] || 0,
+      //     realData.emotion['neutral'] || 0,
+      //     realData.emotion['sad'] || 0,
+      //     realData.emotion['surprise'] || 0
+      //   ];
+      //
+      //   this.genderCamera = {
+      //     labels: ['Male', 'Female'],
+      //     datasets: [{
+      //       data: this.chartsDummyGlobalData.gender
+      //     }],
+      //   };
+      //
+      //   this.ageCamera = {
+      //     labels: ['0-20', '20-40', '40+'],
+      //     datasets: [{
+      //       data: this.chartsDummyGlobalData.age
+      //     }],
+      //   };
+      //
+      //   this.emotionCamera = {
+      //     labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'],
+      //     datasets: [{
+      //       data: this.chartsDummyGlobalData.emotion,
+      //     }],
+      //   };
+      //
+      //   this.applyCriteria();
+      //
+      //   this.chartsDummyGlobalData.total = this.getTotalCount();
+      //
+      //   this.blockUI.stop();
+      // });
     });
   }
 
@@ -351,7 +400,7 @@ export class DashboardComponent implements OnInit {
     }],
   };
 
-  constructor(private dashboardService: DashboardService, private zone: NgZone) {
+  constructor(private dashboardService: DashboardService, private zone: NgZone, private socketService: SocketService) {
   }
 
   ngOnInit() {
@@ -359,12 +408,15 @@ export class DashboardComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    let from = moment().subtract(1, 'hours');
-    let to = moment();
+    const from = moment().subtract(1, 'hours');
+    const to = moment();
     this.picker.datePicker.setStartDate(from.format('DD-MM-YYYY HH:mm'));
 
     this.picker.datePicker.setEndDate(to.format('DD-MM-YYYY HH:mm'));
     this.blockUI.start('Loading...');
+    this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
+      this.selectedTimeFrameVideos = res.videos;
+    });
     this.getDetectionsByTimeFrame(from, to);
   }
 

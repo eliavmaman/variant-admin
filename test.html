@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script
+    src="https://code.jquery.com/jquery-3.3.1.js"
+    integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous"></script>
+
+
+  <script>
+    function getRandomInt(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    let detections = [];
+
+
+    function getNewDetections() {
+      detections = [];
+      for (let i = 0; i < 4; i++) {
+        detections.push([
+          getRandomInt(0, 600),
+          getRandomInt(0, 500),
+          getRandomInt(100, 200),
+          getRandomInt(0, 400)
+        ]);
+      }
+    }
+
+    //bbox_xywh [131, 284, 21, 39]
+    $(() => {
+      let $box = $('.box');
+      let bWidth = $box.width();
+      let bHeight = $box.height();
+      setInterval(() => {
+        getNewDetections();
+        $box.empty();
+        let div = '';
+        for (let i = 0; i < detections.length; i++) {
+
+          div += '<div class="bb" style="width:' + detections[i][2] +
+            'px;height:' + detections[i][3] + 'px;top:' + detections[i][1] + 'px;left:'+ detections[i][0]+'px;">' +
+            '<div style="position: absolute;top:-20px;background-color: green">Person</div>' +
+            '</div>';
+
+        }
+        $box.append(div)
+      }, 500);
+
+    });
+
+  </script>
+  <style>
+
+    .bb {
+      border: 2px solid red;
+      position: absolute;
+    }
+
+    body {
+      text-align: center;
+    }
+
+    .box {
+      position: relative;
+      width: 600px;
+      height: 500px;
+      border: 1px solid black;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+<body>
+<div class="box"></div>
+</body>
+</html>
