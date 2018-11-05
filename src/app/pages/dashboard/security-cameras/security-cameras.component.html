@@ -1,4 +1,4 @@
-<nb-card size="xlarge">
+<nb-card size="large">
   <nb-card-header>
     <div class="cameras-card-header">
       <span class="cameras-card-title">Security Cameras</span>
@@ -12,43 +12,45 @@
       </span>
     </div>
   </nb-card-header>
-  <nb-card-body>
-    <div class="cameras single-view" *ngIf="isSingleView">
+  <nb-card-body style="text-align: center">
+    <div style="height: 480px;width: 640px; margin: auto;position: relative" class="video-container">
       <!--<img class="camera" [src]="selectedCamera.source" alt="">-->
-      <!--<video id="myVideo" width="100%" height="100%" controls="controls" autoplay="autoplay">-->
-        <!--<source [src]="currentCamera" type="video/mp4" codecs="avc1.42E01E, mp4a.40.2">-->
-        <!--Your browser does not support HTML5 video.-->
-      <!--</video>-->
-
-      <iframe width="100%" height="100%" border-color="1px solid black" [src]="currentCamera | safe" frameborder="0" allowfullscreen></iframe>
-      <!--<img class="camera" [src]="currentCamera | safe" alt="">-->
-
+      <video #vid id="myVideo" style="position: relative" [src]="currentCamera" width="100%" height="100%"
+             controls="controls">
+        Your browser does not support HTML5 video.
+      </video>
     </div>
+    <!--<div class="cameras single-view" *ngIf="isSingleView">-->
+     <!---->
+      <!--&lt;!&ndash;<iframe width="100%" height="100%" border-color="1px solid black" [src]="currentCamera | safe" frameborder="0" allowfullscreen></iframe>&ndash;&gt;-->
+      <!--&lt;!&ndash;<img class="camera" [src]="currentCamera | safe" alt="">&ndash;&gt;-->
+
+    <!--</div>-->
 
 
-    <div class="cameras" *ngIf="!isSingleView">
+    <!--<div class="cameras" *ngIf="!isSingleView">-->
 
-      <div class="camera col-sm-6" *ngFor="let camera of cameras">
-        <iframe width="100%" height="100%" border-color="1px solid black" [src]="camera.source | safe" frameborder="0"
-                allow="autoplay; encrypted-media" allowfullscreen></iframe>
-      </div>
+      <!--<div class="camera col-sm-6" *ngFor="let camera of cameras">-->
+        <!--<iframe width="100%" height="100%" border-color="1px solid black" [src]="camera.source | safe" frameborder="0"-->
+                <!--allow="autoplay; encrypted-media" allowfullscreen></iframe>-->
+      <!--</div>-->
 
-    </div>
+    <!--</div>-->
   </nb-card-body>
-  <nb-card-footer>
-    <nb-actions size="medium" fullWidth>
-      <nb-action>
-        <i class="nb-pause-outline"></i><span>Pause</span>
-      </nb-action>
-      <nb-action>
-        <i class="nb-list"></i><span>Logs</span>
-      </nb-action>
-      <nb-action>
-        <i class="nb-search"></i><span>Search</span>
-      </nb-action>
-      <nb-action>
-        <i class="nb-gear"></i><span>Setup</span>
-      </nb-action>
-    </nb-actions>
-  </nb-card-footer>
+  <!--<nb-card-footer>-->
+    <!--<nb-actions size="medium" fullWidth>-->
+      <!--<nb-action>-->
+        <!--<i class="nb-pause-outline"></i><span>Pause</span>-->
+      <!--</nb-action>-->
+      <!--<nb-action>-->
+        <!--<i class="nb-list"></i><span>Logs</span>-->
+      <!--</nb-action>-->
+      <!--<nb-action>-->
+        <!--<i class="nb-search"></i><span>Search</span>-->
+      <!--</nb-action>-->
+      <!--<nb-action>-->
+        <!--<i class="nb-gear"></i><span>Setup</span>-->
+      <!--</nb-action>-->
+    <!--</nb-actions>-->
+  <!--</nb-card-footer>-->
 </nb-card>

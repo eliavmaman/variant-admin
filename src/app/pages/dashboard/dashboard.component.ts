@@ -18,7 +18,7 @@ export class DashboardComponent implements OnInit {
   @ViewChild(DaterangePickerComponent)
   private picker: DaterangePickerComponent;
   @BlockUI() blockUI: NgBlockUI;
-  interval: any;
+
   summaryDescription: string = '';
   totalCriteriaCount: number = 0;
   emotions: any[] = ['All', 'None', 'Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'];
@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
     emotion: [],
     total: 0
   };
-
+  liveCount: number = 0;
   totalGender = 0;
   totalAge = 0;
   totalEmotion = 0;
@@ -39,6 +39,7 @@ export class DashboardComponent implements OnInit {
   people: any = [];
   selectedTimeFrameVideos = [];
   public daterange: any = {};
+  liveCountInterval: any;
 
   // see original project for full list of options
   // can also be setup using the config service to apply to multiple pickers
@@ -52,8 +53,8 @@ export class DashboardComponent implements OnInit {
   };
 
   public selectedDate(value: any, datepicker?: any) {
-    if (this.interval)
-      clearInterval(this.interval);
+    // if (this.interval)
+    //   clearInterval(this.interval);
     // this is the date the iser selected
     console.log(value);
     this.people = [];
@@ -68,13 +69,18 @@ export class DashboardComponent implements OnInit {
 
     this.blockUI.start('Loading...');
     this.dashboardService.getFramesByDate(this.daterange.start, this.daterange.end).subscribe((res: any) => {
+
+      if (res.videos.length == 0) {
+        alert('No recording videos were found');
+        this.blockUI.stop();
+        return false;
+      }
+
       this.selectedTimeFrameVideos = res.videos;
       let start = res.videos[0].time;
       let end = res.videos[0].end;
       this.getDetectionsByTimeFrame(start, end);
     });
-
-
   }
 
   getDetectionDetails(detectionDetails: any, counter: any) {
@@ -90,175 +96,181 @@ export class DashboardComponent implements OnInit {
 
   private getDetectionsByTimeFrame(from, to) {
     this.dashboardService.getDetedctions(from, to).subscribe((res: any) => {
-      let counter = 0;
-      this.detections = res.reverse();
-      let detectionDetails = [];
-      let $box = $('#sec-camera');
-      let bWidth = $box.width();
-      let bHeight = $box.height();
-      this.blockUI.stop();
-      if (this.detections.length == 0) {
-        return;
-      }
-      this.interval = setInterval(() => {
-        detectionDetails = this.getDetectionDetails(detectionDetails, counter);
-        counter++;
-        $box.find('.bb').remove();
-        let div = '';
-        for (let i = 0; i < detectionDetails.length; i++) {
 
-          div += '<div class="bb" style="width:' + detectionDetails[i][2] +
-            'px;height:' + detectionDetails[i][3] + 'px;top:' + detectionDetails[i][1] + 'px;left:' + detectionDetails[i][0] + 'px;">' +
-            '<div style="position: absolute;top:-20px;background-color: green">Person</div>' +
-            '</div>';
 
+      // let counter = 0;
+
+
+      // res = res.sort((a: any, b: any) => {
+      //   // Turn your strings into dates, and then subtract them
+      //   // to get a value that is either negative, positive, or zero.
+      //   // return Math.abs(new Date(b.arrivedAt).getTime() - new Date(a.arrivedAt).getTime());
+      //   return moment.utc(a.arrivedAt, 'DD/MM/YYYY').diff(moment.utc(b.arrivedAt, 'DD/MM/YYYY'));
+      // });
+      var tmpRes = [];
+      let lastSecond: any = 0;
+      let lastMinute: any = 0;
+
+      res.sort(function (left, right) {
+        return moment.utc(left.arrivedAt).diff(moment.utc(right.arrivedAt))
+      });
+
+      res.forEach((r) => {
+        let sec = moment(r.arrivedAt).format('ss');
+        let minute = moment(r.arrivedAt).format('mm');
+        if (lastMinute != minute || sec != lastSecond) {
+          tmpRes.push(r);
+          lastSecond = sec;
+          lastMinute = minute;
         }
-        $box.append(div)
-      }, 1000);
+      })
+      this.detections = tmpRes;//res.reverse();
+
+      // this.detections.forEach((d: any) => {
+      //   console.log(d.arrivedAt);
+      // })
+      // this.blockUI.stop();
 
 
-      // let peoples = {};
-      // res.forEach((d) => {
       //
-      //   d.detections.forEach((det) => {
-      //
-      //     var pid = det.object.split(' ')[1];
-      //     if (peoples[pid]) {
-      //       peoples[pid].gender = det.gender.length == 0 ? peoples[pid].gender : det.gender;
-      //       peoples[pid].emotions.push(det.emotion);
-      //       peoples[pid].confidences.push(det.confidence);
-      //     } else {
-      //       peoples[pid] = {};
-      //       peoples[pid].gender = det.gender;
-      //       peoples[pid].emotions = [det.emotion];
-      //       peoples[pid].confidences = [det.confidence];
-      //     }
-      //   });
-      //
-      //
-      // });
-      //
-      // for (let property in peoples) {
-      //   if (peoples.hasOwnProperty(property)) {
-      //     peoples[property].confidence = getAvgConf(peoples[property]);
-      //     peoples[property].emotion = getAvgEmotion(peoples[property].emotions);
-      //   }
-      // }
-      //
-      // function getAvgConf(p) {
-      //   let sum = 0;
-      //   for (let i = 0; i < p.confidences.length; i++) {
-      //     sum += parseFloat(p.confidences[i]);
-      //   }
-      //
-      //   let avg = sum / p.confidences.length;
-      //
-      //   return avg;
-      // }
-      //
-      // function getAvgEmotion(array) {
-      //   if (array.length == 0)
-      //     return null;
-      //   let modeMap = {};
-      //   let maxEl = array[0], maxCount = 1;
-      //   for (let i = 0; i < array.length; i++) {
-      //     let el = array[i];
-      //     if (modeMap[el] == null)
-      //       modeMap[el] = 1;
-      //     else
-      //       modeMap[el]++;
-      //     if (modeMap[el] > maxCount) {
-      //       maxEl = el;
-      //       maxCount = modeMap[el];
-      //     }
-      //   }
-      //   return maxEl;
-      // }
-      //
-      // for (let key in peoples) {
-      //   let obj = peoples[key];
-      //   this.people.push(obj);
-      // }
-      //
-      // let tempData: any = {
-      //   age: [],
-      //   gender: [],
-      //   emotion: [],
-      //   total: 0
-      // };
-      //
-      // this.people.forEach((p) => {
-      //   tempData.age.push(p.age);
-      //   tempData.gender.push(p.gender);
-      //   tempData.emotion.push(p.emotion);
-      // });
-      //
-      // let realData: any = {
-      //   age: this.getChartObjectCount(tempData.age),
-      //   gender: this.getChartObjectCount(tempData.gender),
-      //   emotion: this.getChartObjectCount(tempData.emotion)
-      // };
-      //
-      // //'Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'
-      //
-      // this.zone.run(() => {
-      //   this.chartsDummyGlobalData = {
-      //     gender: [],
-      //     age: [],
-      //     emotion: [],
-      //     total: 0
-      //     // gender: [100, 128],
-      //     // age: [3, 12, 40],
-      //     // emotion: [10, 13, 16, 8, 0, 0, 7],
-      //     // total: 0
-      //   };
-      //   for (let prop in realData.age) {
-      //     this.chartsDummyGlobalData.age.push(
-      //       prop ? realData[prop] : 0);
-      //   }
-      //
-      //   this.chartsDummyGlobalData.gender = [
-      //     realData.gender['man'] || 0,
-      //     realData.gender['woman'] || 0
-      //   ];
-      //
-      //   this.chartsDummyGlobalData.emotion = [
-      //     realData.emotion['angry'] || 0,
-      //     realData.emotion['disgust'] || 0,
-      //     realData.emotion['fear'] || 0,
-      //     realData.emotion['happy'] || 0,
-      //     realData.emotion['neutral'] || 0,
-      //     realData.emotion['sad'] || 0,
-      //     realData.emotion['surprise'] || 0
-      //   ];
-      //
-      //   this.genderCamera = {
-      //     labels: ['Male', 'Female'],
-      //     datasets: [{
-      //       data: this.chartsDummyGlobalData.gender
-      //     }],
-      //   };
-      //
-      //   this.ageCamera = {
-      //     labels: ['0-20', '20-40', '40+'],
-      //     datasets: [{
-      //       data: this.chartsDummyGlobalData.age
-      //     }],
-      //   };
-      //
-      //   this.emotionCamera = {
-      //     labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'],
-      //     datasets: [{
-      //       data: this.chartsDummyGlobalData.emotion,
-      //     }],
-      //   };
-      //
-      //   this.applyCriteria();
-      //
-      //   this.chartsDummyGlobalData.total = this.getTotalCount();
-      //
-      //   this.blockUI.stop();
-      // });
+      let peoples = {};
+      res.forEach((d) => {
+
+        d.detections.forEach((det) => {
+
+          var pid = det.object.split(' ')[1];
+          if (peoples[pid]) {
+            peoples[pid].gender = det.gender.length == 0 ? peoples[pid].gender : det.gender;
+            peoples[pid].emotions.push(det.emotion);
+            peoples[pid].confidences.push(det.confidence);
+          } else {
+            peoples[pid] = {};
+            peoples[pid].gender = det.gender;
+            peoples[pid].emotions = [det.emotion];
+            peoples[pid].confidences = [det.confidence];
+          }
+        });
+
+      });
+
+      for (let property in peoples) {
+        if (peoples.hasOwnProperty(property)) {
+          peoples[property].confidence = getAvgConf(peoples[property]);
+          peoples[property].emotion = getAvgEmotion(peoples[property].emotions);
+        }
+      }
+
+      function getAvgConf(p) {
+        let sum = 0;
+        for (let i = 0; i < p.confidences.length; i++) {
+          sum += parseFloat(p.confidences[i]);
+        }
+
+        let avg = sum / p.confidences.length;
+
+        return avg;
+      }
+
+      function getAvgEmotion(array) {
+        if (array.length == 0)
+          return null;
+        let modeMap = {};
+        let maxEl = array[0], maxCount = 1;
+        for (let i = 0; i < array.length; i++) {
+          let el = array[i];
+          if (modeMap[el] == null)
+            modeMap[el] = 1;
+          else
+            modeMap[el]++;
+          if (modeMap[el] > maxCount) {
+            maxEl = el;
+            maxCount = modeMap[el];
+          }
+        }
+        return maxEl;
+      }
+
+      for (let key in peoples) {
+        let obj = peoples[key];
+        this.people.push(obj);
+      }
+
+      let tempData: any = {
+        age: [],
+        gender: [],
+        emotion: [],
+        total: 0
+      };
+
+      this.people.forEach((p) => {
+        tempData.age.push(p.age);
+        tempData.gender.push(p.gender);
+        tempData.emotion.push(p.emotion);
+      });
+
+      let realData: any = {
+        age: this.getChartObjectCount(tempData.age),
+        gender: this.getChartObjectCount(tempData.gender),
+        emotion: this.getChartObjectCount(tempData.emotion)
+      };
+
+      //'Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'
+
+      this.zone.run(() => {
+        this.chartsDummyGlobalData = {
+          gender: [],
+          age: [],
+          emotion: [],
+          total: 0
+
+        };
+        for (let prop in realData.age) {
+          this.chartsDummyGlobalData.age.push(
+            prop ? realData[prop] : 0);
+        }
+
+        this.chartsDummyGlobalData.gender = [
+          realData.gender['man'] || 0,
+          realData.gender['woman'] || 0
+        ];
+
+        this.chartsDummyGlobalData.emotion = [
+          realData.emotion['angry'] || 0,
+          realData.emotion['disgust'] || 0,
+          realData.emotion['fear'] || 0,
+          realData.emotion['happy'] || 0,
+          realData.emotion['neutral'] || 0,
+          realData.emotion['sad'] || 0,
+          realData.emotion['surprise'] || 0
+        ];
+
+        this.genderCamera = {
+          labels: ['Male', 'Female'],
+          datasets: [{
+            data: this.chartsDummyGlobalData.gender
+          }],
+        };
+
+        this.ageCamera = {
+          labels: ['0-20', '20-40', '40+'],
+          datasets: [{
+            data: this.chartsDummyGlobalData.age
+          }],
+        };
+
+        this.emotionCamera = {
+          labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'],
+          datasets: [{
+            data: this.chartsDummyGlobalData.emotion,
+          }],
+        };
+
+        this.applyCriteria();
+
+        this.chartsDummyGlobalData.total = this.getTotalCount();
+
+        this.blockUI.stop();
+      });
     });
   }
 
@@ -401,10 +413,31 @@ export class DashboardComponent implements OnInit {
   };
 
   constructor(private dashboardService: DashboardService, private zone: NgZone, private socketService: SocketService) {
+
   }
 
   ngOnInit() {
+    if (this.liveCountInterval) {
+      clearInterval(this.liveCountInterval);
+    }
 
+    this.liveCountInterval = setInterval(() => {
+      this.dashboardService.getLiveCount().subscribe((res: any) => {
+        let detections = res;
+
+        let peoples = [];
+        detections.forEach((d) => {
+          d.detections.forEach((det) => {
+            if (peoples.indexOf(det.object) == -1) {
+              peoples.push(det.object);
+            }
+          });
+        });
+
+
+        this.liveCount = peoples.length;
+      })
+    }, 5000);
   }
 
   ngAfterViewInit() {

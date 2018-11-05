@@ -3,6 +3,10 @@ import {Input} from "@angular/core";
 import {SimpleChanges} from "@angular/core";
 import * as _ from 'lodash';
 import * as $ from "jquery";
+import * as moment from "moment";
+import {ViewChild} from "@angular/core";
+import {ElementRef} from "@angular/core";
+import {BlockUI, NgBlockUI} from 'ng-block-ui';
 
 
 @Component({
@@ -11,10 +15,19 @@ import * as $ from "jquery";
   templateUrl: './security-cameras.component.html',
 })
 export class SecurityCamerasComponent {
+  @BlockUI() blockUI: NgBlockUI;
+  @Input() detections: any;
   @Input() selectedCamera: string;
   @Input() selectedTimeFrameVideos: string[] = [];
+  @ViewChild('vid') video: any;
   currentCamera: string;
   selectedStream: string = '';
+  frameCounter = 0;
+  detectionDetails = [];
+  interval: any;
+  $box: any;
+  bWidth: any;
+  bHeight: any;
   cameras: any[] = [{
     id: 1,
     title: 'Camera #1',
@@ -34,6 +47,34 @@ export class SecurityCamerasComponent {
     source: 'https://variant.shinobi.video/cOxz0KrvaJesq9yqDc50ybnpmZL6cF/embed/2Df5hBE/ZkEuo7mES8/jquery%7Cfullscreen',
   }];
 
+  ngAfterViewInit() {
+    this.$box = $('.video-container');
+    this.bWidth = this.$box.width();
+    this.bHeight = this.$box.height();
+    this.video.nativeElement.ontimeupdate = () => {
+
+      let sec = parseInt(this.video.nativeElement.currentTime);
+      this.detectionDetails = this.getDetectionDetails(this.detectionDetails, sec);
+      this.frameCounter++;
+
+      console.log(this.$box.find('.bb').length);
+
+      this.$box.find('.bb').remove();
+      let div = '';
+      for (let i = 0; i < this.detectionDetails.length; i++) {
+
+        div += '<div class="bb" style="width:' + this.detectionDetails[i].bb[2] +
+          'px;height:' + this.detectionDetails[i].bb[3] + 'px;top:' + this.detectionDetails[i].bb[1] + 'px;left:' +
+          this.detectionDetails[i].bb[0] + 'px;">' +
+          '<div style="position: absolute;top:-20px;background-color: green">' + this.detectionDetails[i].conf + '</div>' +
+          '</div>';
+
+      }
+      this.$box.append(div);
+
+    }
+  }
+
   ngOnChanges(changes: SimpleChanges) {
     if (changes.selectedCamera) {
       this.setSelectedCamera(changes.selectedCamera.currentValue);
@@ -46,13 +87,47 @@ export class SecurityCamerasComponent {
       this.currentCamera = this.selectedStream;
 
       //$('#myVideo').get(0).play();
+    }
 
+    if (changes.detections && (changes.detections.currentValue && changes.detections.previousValue)) {
+      this.frameCounter = 0;
 
+      // this.blockUI.stop();
+
+      if (this.detections.length == 0) {
+        return;
+      }
+      if (this.interval)
+        clearInterval(this.interval);
+
+      this.video.nativeElement.pause();
+      this.video.nativeElement.currentTime = 0;
+      this.video.nativeElement.play();
+
+      this.interval = setInterval(() => {
+
+      }, 1000);
     }
 
     // You can also use categoryId.previousValue and
     // categoryId.firstChange for comparing old and new values
 
+  }
+
+  getDetectionDetails(detectionDetails: any, counter: any) {
+    if (this.detections.length == 0) return [];
+    detectionDetails = [];
+    if (!this.detections[counter]) return;
+    var sel = this.detections[counter].detections;
+    if (moment(this.detections[counter + 1].detections).seconds() == moment(this.detections[counter].detections).seconds()) {
+      sel = this.detections[counter + 1].detections;
+    }
+    let dd = sel;// this.detections[counter].detections;
+    for (let i = 0; i < dd.length; i++) {
+      detectionDetails.push({bb: dd[i].bbox_xywh, conf: dd[i].confidence});
+    }
+
+    return detectionDetails;
   }
 
   setSelectedCamera(cam_id) {
