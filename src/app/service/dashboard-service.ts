@@ -36,7 +36,7 @@ export class DashboardService {
       let fIso = from.toISOString().split('.')[0];
       let eIso = to.toISOString().split('.')[0];
 
-      return this.http.get('http://51.15.77.204/' + shinobiData.auth_token + '/videos/' + shinobiData.ke +
+      return this.http.get('https://51.15.77.204/' + shinobiData.auth_token + '/videos/' + shinobiData.ke +
         '/2DWD9ju3Vw?start=' + fIso + '&endIsStartTo&end=' + eIso);
     }
 

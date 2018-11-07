@@ -82,12 +82,12 @@
     "rxjs": "^6.1.0",
     "rxjs-compat": "^6.1.0",
     "socicon": "3.0.5",
+    "socket.io-client": "^2.1.1",
     "tinymce": "4.5.7",
     "typeface-exo": "0.0.22",
     "typescript": "2.7.2",
     "web-animations-js": "2.2.5",
-    "zone.js": "^0.8.26",
-    "socket.io-client": "^2.1.1"
+    "zone.js": "^0.8.26"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.6.0",
