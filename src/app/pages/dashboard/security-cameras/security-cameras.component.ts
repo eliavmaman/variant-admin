@@ -82,7 +82,7 @@ export class SecurityCamerasComponent {
     if (changes.selectedTimeFrameVideos &&
       (changes.selectedTimeFrameVideos.currentValue && changes.selectedTimeFrameVideos.previousValue) &&
       changes.selectedTimeFrameVideos.currentValue[0] != changes.selectedTimeFrameVideos.previousValue[0]) {
-      this.selectedStream = 'https://51.15.77.204' + changes.selectedTimeFrameVideos.currentValue[0].href;
+      this.selectedStream = '//51.15.77.204' + changes.selectedTimeFrameVideos.currentValue[0].href;
 
       this.currentCamera = this.selectedStream;
 

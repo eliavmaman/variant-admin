@@ -33,7 +33,7 @@ export class SocketService {
   }
 
   getShinobiAuth() {
-    return this.http.post('https://51.15.77.204?json=true', {
+    return this.http.post('//51.15.77.204?json=true', {
       machineID: 'fMUVxYdG1X3hWb7GNkTd',
       mail: 'ccio@m03.ca',
       pass: 'password',
