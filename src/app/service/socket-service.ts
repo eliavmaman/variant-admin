@@ -15,7 +15,7 @@ export class SocketService {
   };
   constructor(private http: HttpClient) {
 
-    this.socket = io('http://51.15.77.204/');
+    this.socket = io('https://51.15.77.204/');
 
     this.getShinobiAuth().subscribe((res: any) => {
       let $user = res['$user'];
@@ -33,7 +33,7 @@ export class SocketService {
   }
 
   getShinobiAuth() {
-    return this.http.post('http://51.15.77.204?json=true', {
+    return this.http.post('https://51.15.77.204?json=true', {
       machineID: 'fMUVxYdG1X3hWb7GNkTd',
       mail: 'ccio@m03.ca',
       pass: 'password',
