@@ -76,7 +76,7 @@ export class DashboardComponent implements OnInit {
 
     this.blockUI.start('Loading...');
     this.dashboardService.getFramesByDate(this.daterange.start, this.daterange.end).subscribe((res: any) => {
-
+      this.emotionModel = [];
       if (res.videos.length == 0) {
         alert('No recording videos were found');
         this.blockUI.stop();
@@ -456,7 +456,7 @@ export class DashboardComponent implements OnInit {
 
     this.picker.datePicker.setEndDate(to.format('DD-MM-YYYY HH:mm'));
     this.blockUI.start('Loading...');
-    this.dashboardService.getFramesByDate(from,to).subscribe((res: any) => {
+    this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
 
       if (res.videos.length == 0) {
         alert('No recording videos were found');
