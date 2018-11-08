@@ -1,16 +1,12 @@
 // themes - our custom or/and out of the box themes
 @import 'themes';
-
 // framework component themes (styles tied to theme variables)
 @import '~@nebular/theme/styles/globals';
 @import '~@nebular/auth/styles/all';
-
 // global app font size
 @import './font-size';
-
 // loading progress bar theme
 @import './pace.theme';
-
 @import './bootstrap-rtl';
 
 // install the framework and custom global styles
@@ -28,11 +24,29 @@
     border-radius: 50%; // TODO: quickfix for https://github.com/akveo/nebular/issues/275
   }
   @include bootstrap-rtl();
-};
-.daterangepicker_input input.form-control{
+}
+
+.daterangepicker_input input.form-control {
   background-color: #fff !important;
 }
+
 .bb {
   border: 2px solid red;
   position: absolute;
+}
+
+.nb-theme-cosmic .dropdown .btn-primary + .dropdown-menu > .dropdown-item.active {
+  background-color: #37317a !important;
+}
+
+.dropdown.dropdown-inline .btn.btn-primary {
+  background-color: #37317a !important;
+}
+
+.nb-theme-cosmic .dropdown .btn-primary + .dropdown-menu {
+  background-color: #37317a !important;
+  border-top: 1px solid #654ddb !important;
+}
+.dropdown-inline {
+  width: 100%;
 }

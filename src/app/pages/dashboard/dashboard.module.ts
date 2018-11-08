@@ -22,6 +22,7 @@ import { TrafficComponent } from './traffic/traffic.component';
 import { TrafficChartComponent } from './traffic/traffic-chart.component';
 import {ChartsModule} from '../charts/charts.module';
 import {Daterangepicker} from "ng2-daterangepicker";
+import {MultiselectDropdownModule} from "angular-2-dropdown-multiselect";
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import {Daterangepicker} from "ng2-daterangepicker";
     ThemeModule,
     NgxEchartsModule,
     ChartsModule,
-    Daterangepicker
+    Daterangepicker,
+    MultiselectDropdownModule,
   ],
   declarations: [
     DashboardComponent,

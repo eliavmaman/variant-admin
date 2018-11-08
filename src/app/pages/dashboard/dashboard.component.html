@@ -55,12 +55,16 @@
       </div>
       <div class="col-3">
         <label>Please select emotion</label>
-        <select class="form-control" [(ngModel)]="criteria.emotion">
+        <div>
+          <ss-multiselect-dropdown [settings]="settings" [options]="emotionOptions" [(ngModel)]="emotionModel"
+                                   (ngModelChange)="onEmotionChange($event)"></ss-multiselect-dropdown>
+        </div>
+        <!--<select class="form-control" [(ngModel)]="criteria.emotion">-->
 
-          <option *ngFor="let e of emotions; let i = index" [attr.data-index]="i" value="{{e}}">
-            {{e}}
-          </option>
-        </select>
+        <!--<option *ngFor="let e of emotions; let i = index" [attr.data-index]="i" value="{{e}}">-->
+        <!--{{e}}-->
+        <!--</option>-->
+        <!--</select>-->
       </div>
       <div class="col-3">
         <label>Please select age range</label>

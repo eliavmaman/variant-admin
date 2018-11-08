@@ -3,11 +3,13 @@ import {DashboardService} from '../../service/dashboard-service';
 import {SocketService} from '../../service/socket-service';
 import {Observable} from 'rxjs/Observable';
 import {forkJoin} from 'rxjs/observable/forkJoin';
-import {NgZone} from "@angular/core";
+import {NgZone} from '@angular/core';
 import * as moment from 'moment';
 import {BlockUI, NgBlockUI} from 'ng-block-ui';
-import {DaterangePickerComponent} from "ng2-daterangepicker";
+import {DaterangePickerComponent} from 'ng2-daterangepicker';
 import * as $ from "jquery";
+import {IMultiSelectOption, IMultiSelectSettings} from "angular-2-dropdown-multiselect";
+
 
 @Component({
   selector: 'ngx-dashboard',
@@ -21,7 +23,7 @@ export class DashboardComponent implements OnInit {
 
   summaryDescription: string = '';
   totalCriteriaCount: number = 0;
-  emotions: any[] = ['All', 'None', 'Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'];
+  emotions: any[] = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'];
   ageRanges: any[] = ['All', 'None', '0-20', '20-40', '40+'];
   gender: any[] = ['All', 'None', 'Male', 'Female'];
   criteria = {gender: 'All', emotion: 'All', ageRanges: 'All'};
@@ -32,14 +34,19 @@ export class DashboardComponent implements OnInit {
     total: 0
   };
   liveCount: number = 0;
-  totalGender = 0;
-  totalAge = 0;
-  totalEmotion = 0;
+  liveCountInterval: any;
+  emotionModel: string[];
+  emotionOptions: IMultiSelectOption[] = [];
+  settings: IMultiSelectSettings = {
+    showCheckAll: true,
+    showUncheckAll: true
+  }
+
   detections: any[] = [];
   people: any = [];
   selectedTimeFrameVideos = [];
   public daterange: any = {};
-  liveCountInterval: any;
+
 
   // see original project for full list of options
   // can also be setup using the config service to apply to multiple pickers
@@ -292,12 +299,11 @@ export class DashboardComponent implements OnInit {
 
   applyCriteria() {
     const genderIndex = this.gender.indexOf(this.criteria.gender);
-    const emotionIndex = this.emotions.indexOf(this.criteria.emotion);
     const ageIndex = this.ageRanges.indexOf(this.criteria.ageRanges);
 
 
     var totalGender = this.getGenderTotal(genderIndex);
-    var totalEmotion = this.getEmotionTotal(emotionIndex);
+    var totalEmotion = this.getEmotionTotal();
     var totalAge = this.getAgeTotal(ageIndex);
     this.totalCriteriaCount = (
       totalGender +
@@ -324,20 +330,26 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  getEmotionTotal(emotionIndex: any): any {
+  getEmotionTotal(): any {
     let sum = 0;
-    if (this.criteria.emotion === 'All') {
-      this.chartsDummyGlobalData.emotion.forEach((g) => {
-        sum += g;
-      });
-
-      return sum;
-    } else if (this.criteria.emotion === 'None')
-      return 0;
-    else {
-      // let emotionIndex = this.emotions.indexOf(this.criteria.emotion);
-      return this.chartsDummyGlobalData.emotion[emotionIndex];
-    }
+    if (!this.emotionModel) return 0;
+    this.emotionModel.forEach((em) => {
+      const emotionIndex = this.emotions.indexOf(em);
+      if (emotionIndex > -1)
+        sum += this.chartsDummyGlobalData.emotion[emotionIndex];
+    });
+    return sum;
+    // if (!this.emotionModel) return 0;
+    // if (this.emotionModel.indexOf('All') > -1) {
+    //   this.chartsDummyGlobalData.emotion.forEach((g) => {
+    //     sum += g;
+    //   });
+    //
+    //   return sum;
+    // } else if (this.emotionModel.indexOf('None') > -1)
+    //   return 0;
+    // else {
+    // }
   }
 
   getAgeTotal(ageIndex: any): any {
@@ -405,12 +417,7 @@ export class DashboardComponent implements OnInit {
       data: this.chartsDummyGlobalData.emotion,
     }],
   };
-  camData4 = {
-    labels: ['Gender', 'Age', 'Emotion'],
-    datasets: [{
-      data: []
-    }],
-  };
+
 
   constructor(private dashboardService: DashboardService, private zone: NgZone, private socketService: SocketService) {
 
@@ -420,6 +427,9 @@ export class DashboardComponent implements OnInit {
     if (this.liveCountInterval) {
       clearInterval(this.liveCountInterval);
     }
+    this.emotions.forEach((em) => {
+      this.emotionOptions.push({id: em, name: em});
+    })
 
     this.liveCountInterval = setInterval(() => {
       this.dashboardService.getLiveCount().subscribe((res: any) => {
@@ -434,7 +444,6 @@ export class DashboardComponent implements OnInit {
           });
         });
 
-
         this.liveCount = peoples.length;
       })
     }, 5000);
@@ -447,10 +456,27 @@ export class DashboardComponent implements OnInit {
 
     this.picker.datePicker.setEndDate(to.format('DD-MM-YYYY HH:mm'));
     this.blockUI.start('Loading...');
-    this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
+    this.dashboardService.getFramesByDate(from,to).subscribe((res: any) => {
+
+      if (res.videos.length == 0) {
+        alert('No recording videos were found');
+        this.blockUI.stop();
+        return false;
+      }
+
       this.selectedTimeFrameVideos = res.videos;
+      let start = res.videos[0].time;
+      let end = res.videos[0].end;
+      this.getDetectionsByTimeFrame(start, end);
     });
-    this.getDetectionsByTimeFrame(from, to);
+    // this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
+    //   this.selectedTimeFrameVideos = res.videos;
+    // });
+    // this.getDetectionsByTimeFrame(from, to);
+  }
+
+  onEmotionChange() {
+    console.log(this.emotionModel);
   }
 
   onCameraSelected(camera) {
