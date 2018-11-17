@@ -36,7 +36,7 @@
   },
   "dependencies": {
     "@agm/core": "1.0.0-beta.2",
-    "@angular/animations": "6.0.0",
+    "@angular/animations": "^6.0.0",
     "@angular/cli": "6.0.0",
     "@angular/common": "6.0.0",
     "@angular/compiler": "6.0.0",
@@ -76,7 +76,9 @@
     "ng2-ckeditor": "1.1.13",
     "ng2-daterangepicker": "^2.0.12",
     "ng2-smart-table": "1.2.2",
+    "ngx-bootstrap": "^3.1.1",
     "ngx-echarts": "2.0.1",
+    "ngx-toastr": "^9.1.1",
     "normalize.css": "6.0.0",
     "pace-js": "1.0.2",
     "roboto-fontface": "0.8.0",

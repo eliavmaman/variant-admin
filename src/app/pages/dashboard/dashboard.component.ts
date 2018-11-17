@@ -59,6 +59,64 @@ export class DashboardComponent implements OnInit {
     alwaysShowCalendars: false
   };
 
+  constructor(private dashboardService: DashboardService, private zone: NgZone, private socketService: SocketService) {
+
+  }
+
+  ngOnInit() {
+    if (this.liveCountInterval) {
+      clearInterval(this.liveCountInterval);
+    }
+    this.emotions.forEach((em) => {
+      this.emotionOptions.push({
+        id: em,
+        name: em
+      });
+    })
+
+    this.liveCountInterval = setInterval(() => {
+      this.dashboardService.getLiveCount().subscribe((res: any) => {
+        let detections = res;
+
+        let peoples = [];
+        detections.forEach((d) => {
+          d.detections.forEach((det) => {
+            if (peoples.indexOf(det.object) == -1) {
+              peoples.push(det.object);
+            }
+          });
+        });
+
+        this.liveCount = peoples.length;
+      })
+    }, 5000);
+  }
+
+  ngAfterViewInit() {
+    const from = moment().subtract(1, 'hours');
+    const to = moment();
+    this.picker.datePicker.setStartDate(from.format('DD-MM-YYYY HH:mm'));
+
+    this.picker.datePicker.setEndDate(to.format('DD-MM-YYYY HH:mm'));
+    this.blockUI.start('Loading...');
+    this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
+
+      if (res.videos.length == 0) {
+        alert('No recording videos were found');
+        this.blockUI.stop();
+        return false;
+      }
+
+      this.selectedTimeFrameVideos = res.videos;
+      let start = res.videos[0].time;
+      let end = res.videos[0].end;
+      this.getDetectionsByTimeFrame(start, end);
+    });
+    // this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
+    //   this.selectedTimeFrameVideos = res.videos;
+    // });
+    // this.getDetectionsByTimeFrame(from, to);
+  }
   public selectedDate(value: any, datepicker?: any) {
     // if (this.interval)
     //   clearInterval(this.interval);
@@ -417,63 +475,6 @@ export class DashboardComponent implements OnInit {
       data: this.chartsDummyGlobalData.emotion,
     }],
   };
-
-
-  constructor(private dashboardService: DashboardService, private zone: NgZone, private socketService: SocketService) {
-
-  }
-
-  ngOnInit() {
-    if (this.liveCountInterval) {
-      clearInterval(this.liveCountInterval);
-    }
-    this.emotions.forEach((em) => {
-      this.emotionOptions.push({id: em, name: em});
-    })
-
-    this.liveCountInterval = setInterval(() => {
-      this.dashboardService.getLiveCount().subscribe((res: any) => {
-        let detections = res;
-
-        let peoples = [];
-        detections.forEach((d) => {
-          d.detections.forEach((det) => {
-            if (peoples.indexOf(det.object) == -1) {
-              peoples.push(det.object);
-            }
-          });
-        });
-
-        this.liveCount = peoples.length;
-      })
-    }, 5000);
-  }
-
-  ngAfterViewInit() {
-    const from = moment().subtract(1, 'hours');
-    const to = moment();
-    this.picker.datePicker.setStartDate(from.format('DD-MM-YYYY HH:mm'));
-
-    this.picker.datePicker.setEndDate(to.format('DD-MM-YYYY HH:mm'));
-    this.blockUI.start('Loading...');
-    this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
-
-      if (res.videos.length == 0) {
-        alert('No recording videos were found');
-        this.blockUI.stop();
-        return false;
-      }
-
-      this.selectedTimeFrameVideos = res.videos;
-      let start = res.videos[0].time;
-      let end = res.videos[0].end;
-      this.getDetectionsByTimeFrame(start, end);
-    });
-    // this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
-    //   this.selectedTimeFrameVideos = res.videos;
-    // });
-    // this.getDetectionsByTimeFrame(from, to);
-  }
 
   onEmotionChange() {
     console.log(this.emotionModel);

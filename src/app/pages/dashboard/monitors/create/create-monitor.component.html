@@ -1,0 +1,53 @@
+<div bsModal #childModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-child-name">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-child-name" class="modal-title pull-left">New monitor</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="form-group">
+          <label for="">Mode</label>
+          <select [(ngModel)]="new_monitor.mode" class="form-control">
+            <option *ngFor="let mode of modes" [ngValue]="mode.id">{{mode.name}}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="">Name</label>
+          <input type="text" [(ngModel)]="new_monitor.name" class="form-control"/>
+        </div>
+        <div class="form-group">
+          <label for="">Path</label>
+          <input type="text" [(ngModel)]="new_monitor.path" class="form-control"/>
+        </div>
+        <div class="form-group">
+          <label for="">Fps</label>
+          <input type="number" [(ngModel)]="new_monitor.fps" class="form-control"/>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" (click)="create()">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!--<div class="modal fade" id="newModal" tabindex="-1" role="dialog" #modal aria-labelledby="newModalLabel"-->
+     <!--aria-hidden="true">-->
+  <!--<div class="modal-dialog modal-lg" role="document">-->
+    <!--<div class="modal-content">-->
+      <!--<div class="modal-header">-->
+        <!--<h5 class="modal-title" id="exampleModalLabel">New monitor</h5>-->
+        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+          <!--<span aria-hidden="true">&times;</span>-->
+        <!--</button>-->
+      <!--</div>-->
+     <!---->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->
