@@ -66,11 +66,8 @@ export class DashboardService {
   updateMonitor(monitor: any) {
     const shinobiData: any = JSON.parse(localStorage.getItem('shinobi'));
     let cleanMonitor: any = this.cleanMonitorObjectForDatabase(monitor, true)
-    cleanMonitor.details = JSON.stringify(monitor.details);
-    cleanMonitor.details = cleanMonitor.details.slice(1, -1);
-    delete cleanMonitor.protocol;
-    delete cleanMonitor.ke;
-    return this.http.post('//51.15.77.204/' + shinobiData.auth_token + '/configureMonitor/' + shinobiData.ke + '/' + monitor.mid, {data: cleanMonitor});
+    cleanMonitor.details = monitor.details;
+    return this.http.post('//51.15.77.204/' + shinobiData.auth_token + '/configureMonitor/' + shinobiData.ke + '/' + monitor.mid, {data: JSON.stringify(cleanMonitor)});
   }
 
   createMonitor(monitor: any) {
@@ -191,7 +188,7 @@ export class DashboardService {
         "detector_delete_motionless_videos": "0",
         "detector_send_frames": "1",
         "detector_region_of_interest": "0",
-        "detector_fps": "",
+        "detector_fps": "1",
         "detector_scale_x": "640",
         "detector_scale_y": "480",
         "detector_use_motion": "1",

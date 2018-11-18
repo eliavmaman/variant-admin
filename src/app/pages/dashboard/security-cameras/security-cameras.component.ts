@@ -53,24 +53,24 @@ export class SecurityCamerasComponent {
     this.bHeight = this.$box.height();
     this.video.nativeElement.ontimeupdate = () => {
 
-      let sec = parseInt(this.video.nativeElement.currentTime);
-      this.detectionDetails = this.getDetectionDetails(this.detectionDetails, sec);
-      this.frameCounter++;
-
-      console.log(this.$box.find('.bb').length);
-
-      this.$box.find('.bb').remove();
-      let div = '';
-      for (let i = 0; i < this.detectionDetails.length; i++) {
-
-        div += '<div class="bb" style="width:' + this.detectionDetails[i].bb[2] +
-          'px;height:' + this.detectionDetails[i].bb[3] + 'px;top:' + this.detectionDetails[i].bb[1] + 'px;left:' +
-          this.detectionDetails[i].bb[0] + 'px;">' +
-          '<div style="position: absolute;top:-20px;background-color: green">' + this.detectionDetails[i].conf + '</div>' +
-          '</div>';
-
-      }
-      this.$box.append(div);
+      // let sec = parseInt(this.video.nativeElement.currentTime);
+      // this.detectionDetails = this.getDetectionDetails(this.detectionDetails, sec);
+      // this.frameCounter++;
+      //
+      // console.log(this.$box.find('.bb').length);
+      //
+      // this.$box.find('.bb').remove();
+      // let div = '';
+      // for (let i = 0; i < this.detectionDetails.length; i++) {
+      //
+      //   div += '<div class="bb" style="width:' + this.detectionDetails[i].bb[2] +
+      //     'px;height:' + this.detectionDetails[i].bb[3] + 'px;top:' + this.detectionDetails[i].bb[1] + 'px;left:' +
+      //     this.detectionDetails[i].bb[0] + 'px;">' +
+      //     '<div style="position: absolute;top:-20px;background-color: green">' + this.detectionDetails[i].conf + '</div>' +
+      //     '</div>';
+      //
+      // }
+      // this.$box.append(div);
 
     }
   }

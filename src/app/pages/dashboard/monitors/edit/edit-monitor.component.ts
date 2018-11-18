@@ -38,11 +38,11 @@ export class EditMonitorComponent implements OnInit {
 
     this.dashboardService.updateMonitor(this.selected).subscribe((res: any) => {
         this.hide();
-        if (res.msg) {
-          this.onClose.emit(false);
+        if (res.ok) {
+          this.onClose.emit(true);
         }
         else {
-          this.onClose.emit(true);
+          this.onClose.emit(false);
         }
 
       }, (err) => {

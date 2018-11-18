@@ -101,7 +101,7 @@ export class DashboardComponent implements OnInit {
     this.blockUI.start('Loading...');
     this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
 
-      if (res.videos.length == 0) {
+      if (res.videos && res.videos.length == 0) {
         alert('No recording videos were found');
         this.blockUI.stop();
         return false;
