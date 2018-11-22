@@ -41,7 +41,7 @@ export class DashboardComponent implements OnInit {
     showCheckAll: true,
     showUncheckAll: true
   }
-
+  monitors: any[];
   detections: any[] = [];
   people: any = [];
   selectedTimeFrameVideos = [];
@@ -89,7 +89,7 @@ export class DashboardComponent implements OnInit {
 
         this.liveCount = peoples.length;
       })
-    }, 5000);
+    }, 10000);
   }
 
   ngAfterViewInit() {
@@ -101,7 +101,7 @@ export class DashboardComponent implements OnInit {
     this.blockUI.start('Loading...');
     this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
 
-      if (res.videos && res.videos.length == 0) {
+      if ((res.videos && res.videos.length == 0)) {
         alert('No recording videos were found');
         this.blockUI.stop();
         return false;
@@ -112,11 +112,20 @@ export class DashboardComponent implements OnInit {
       let end = res.videos[0].end;
       this.getDetectionsByTimeFrame(start, end);
     });
-    // this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
-    //   this.selectedTimeFrameVideos = res.videos;
-    // });
-    // this.getDetectionsByTimeFrame(from, to);
+    this.getAllMonitors();
   }
+
+  getAllMonitors() {
+    this.dashboardService.getAllMonitors().subscribe((res: any) => {
+
+      let obj: any = {};
+      res.forEach((m) => {
+        obj[m.mid] = m;
+      })
+      this.monitors = obj;
+    })
+  }
+
   public selectedDate(value: any, datepicker?: any) {
     // if (this.interval)
     //   clearInterval(this.interval);

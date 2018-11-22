@@ -18,12 +18,13 @@ export class SecurityCamerasComponent {
   @BlockUI() blockUI: NgBlockUI;
   @Input() detections: any;
   @Input() selectedCamera: string;
+  @Input() monitors: any[];
   @Input() selectedTimeFrameVideos: string[] = [];
   @ViewChild('vid') video: any;
   currentCamera: string;
   selectedStream: string = '';
   frameCounter = 0;
-  detectionDetails = [];
+  detectionDetails: any[] = [];
   interval: any;
   $box: any;
   bWidth: any;
@@ -49,28 +50,52 @@ export class SecurityCamerasComponent {
 
   ngAfterViewInit() {
     this.$box = $('.video-container');
-    this.bWidth = this.$box.width();
-    this.bHeight = this.$box.height();
+    let $videoInBox = this.$box.find('video');
+    this.bWidth = $videoInBox.width();
+    this.bHeight = $videoInBox.height();
+
+    //Every second the video playing it get the relevant frame.
     this.video.nativeElement.ontimeupdate = () => {
 
-      // let sec = parseInt(this.video.nativeElement.currentTime);
-      // this.detectionDetails = this.getDetectionDetails(this.detectionDetails, sec);
-      // this.frameCounter++;
-      //
-      // console.log(this.$box.find('.bb').length);
-      //
-      // this.$box.find('.bb').remove();
-      // let div = '';
-      // for (let i = 0; i < this.detectionDetails.length; i++) {
-      //
-      //   div += '<div class="bb" style="width:' + this.detectionDetails[i].bb[2] +
-      //     'px;height:' + this.detectionDetails[i].bb[3] + 'px;top:' + this.detectionDetails[i].bb[1] + 'px;left:' +
-      //     this.detectionDetails[i].bb[0] + 'px;">' +
-      //     '<div style="position: absolute;top:-20px;background-color: green">' + this.detectionDetails[i].conf + '</div>' +
-      //     '</div>';
-      //
-      // }
-      // this.$box.append(div);
+      let sec = parseInt(this.video.nativeElement.currentTime);
+
+      //get cuurent frame
+      let currentDetection: any = this.detections[sec];
+
+      //get monitor details or default width and height if not exsit
+      let $monitorDetails = this.monitors[currentDetection.camera_id] ? JSON.parse(this.monitors[currentDetection.camera_id].details) :
+        {
+          detector_scale_x: 640,
+          detector_scale_y: 480
+        };
+
+
+      let widthRatio = this.bWidth / $monitorDetails.detector_scale_x
+      let heightRatio = this.bHeight / $monitorDetails.detector_scale_y
+
+      this.detectionDetails = this.getDetectionDetails(this.detectionDetails, sec);
+      this.frameCounter++;
+
+      console.log(this.$box.find('.bb').length)
+      console.log()
+
+
+      this.$box.find('.bb').remove();
+      let div = '';
+      for (let i = 0; i < this.detectionDetails.length; i++) {
+        if (this.detectionDetails[i].conf > 0.85) {
+          let scaledLeft = this.detectionDetails[i].bb[0] * widthRatio
+          let scaledTop = this.detectionDetails[i].bb[1] * heightRatio
+          let scaledWidth = this.detectionDetails[i].bb[2] * widthRatio
+          let scaledHeight = this.detectionDetails[i].bb[3] * heightRatio
+          div += '<div class="bb" style="width:' + scaledWidth +
+            'px;height:' + scaledHeight + 'px;top:' + scaledTop + 'px;left:' + scaledLeft + 'px;">' +
+            '<div style="position: absolute;top:-20px;background-color: green">' + this.detectionDetails[i].conf + '</div>' +
+            '</div>';
+        }
+
+      }
+      this.$box.append(div);
 
     }
   }
@@ -86,7 +111,6 @@ export class SecurityCamerasComponent {
 
       this.currentCamera = this.selectedStream;
 
-      //$('#myVideo').get(0).play();
     }
 
     if (changes.detections && (changes.detections.currentValue && changes.detections.previousValue)) {
