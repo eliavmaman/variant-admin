@@ -63,11 +63,11 @@ export class SecurityCamerasComponent {
       let currentDetection: any = this.detections[sec];
 
       //get monitor details or default width and height if not exsit
-      let $monitorDetails = (currentDetection.camera_id && this.monitors[currentDetection.camera_id]) ? JSON.parse(this.monitors[currentDetection.camera_id].details) :
-        {
-          detector_scale_x: 640,
-          detector_scale_y: 480
-        };
+      //let $monitorDetails = //(currentDetection.camera_id && this.monitors[currentDetection.camera_id]) ? JSON.parse(this.monitors[currentDetection.camera_id].details) :
+      let $monitorDetails = {
+        detector_scale_x: 640,
+        detector_scale_y: 480
+      };
 
 
       let widthRatio = this.bWidth / $monitorDetails.detector_scale_x
