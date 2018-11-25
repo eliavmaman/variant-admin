@@ -169,7 +169,7 @@ export class DashboardComponent implements OnInit {
   }
 
   private getDetectionsByTimeFrame(from, to) {
-    this.dashboardService.getDetedctions(from, to).subscribe((res: any) => {
+    this.dashboardService.getDetedctions(moment.utc(from).format(), moment.utc(to).format()).subscribe((res: any) => {
 
 
       // let counter = 0;
@@ -189,16 +189,16 @@ export class DashboardComponent implements OnInit {
         return moment.utc(left.arrivedAt).diff(moment.utc(right.arrivedAt))
       });
 
-      res.forEach((r) => {
-        let sec = moment(r.arrivedAt).format('ss');
-        let minute = moment(r.arrivedAt).format('mm');
-        if (lastMinute != minute || sec != lastSecond) {
-          tmpRes.push(r);
-          lastSecond = sec;
-          lastMinute = minute;
-        }
-      })
-      this.detections = tmpRes;//res.reverse();
+      // res.forEach((r) => {
+      //   let sec = moment(r.arrivedAt).format('ss');
+      //   let minute = moment(r.arrivedAt).format('mm');
+      //   if (lastMinute != minute || sec != lastSecond) {
+      //     tmpRes.push(r);
+      //     lastSecond = sec;
+      //     lastMinute = minute;
+      //   }
+      // })
+      this.detections = res;
 
       // this.detections.forEach((d: any) => {
       //   console.log(d.arrivedAt);

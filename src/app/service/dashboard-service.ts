@@ -14,7 +14,8 @@ export class DashboardService {
 
 
   getDetedctions(from: any, to: any) {
-    //this.herokuUrl = this.local;
+    this.herokuUrl = this.local;
+
     return this.http.get(this.herokuUrl + '/api/detections', {
       params: {
         fromDate: from,
