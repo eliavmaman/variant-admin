@@ -169,7 +169,7 @@ export class DashboardComponent implements OnInit {
   }
 
   private getDetectionsByTimeFrame(from, to) {
-    this.dashboardService.getDetedctions(moment.utc(from).format(), moment.utc(to).format()).subscribe((res: any) => {
+    this.dashboardService.getDetedctions(from, to).subscribe((res: any) => {
 
 
       // let counter = 0;
