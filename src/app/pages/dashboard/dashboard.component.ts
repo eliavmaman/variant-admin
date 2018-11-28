@@ -9,6 +9,7 @@ import {BlockUI, NgBlockUI} from 'ng-block-ui';
 import {DaterangePickerComponent} from 'ng2-daterangepicker';
 import * as $ from "jquery";
 import {IMultiSelectOption, IMultiSelectSettings} from "angular-2-dropdown-multiselect";
+import * as _ from 'lodash';
 
 
 @Component({
@@ -45,6 +46,7 @@ export class DashboardComponent implements OnInit {
   detections: any[] = [];
   people: any = [];
   selectedTimeFrameVideos = [];
+  selectedMonitor: any;// made for KYLE demo 29.11.18 remove after
   public daterange: any = {};
 
 
@@ -99,18 +101,26 @@ export class DashboardComponent implements OnInit {
 
     this.picker.datePicker.setEndDate(to.format('DD-MM-YYYY HH:mm'));
     this.blockUI.start('Loading...');
-    this.dashboardService.getFramesByDate(from, to).subscribe((res: any) => {
+    this.dashboardService.getAllMonitors().subscribe((res: any) => {
+      this.selectedMonitor = _.find(res, (m) => {
+        return m.mid == 'BQ5X7YbmUj'
+      });
+      if (this.selectedMonitor) {
+        this.dashboardService.getFramesByDate(from, to, this.selectedMonitor.mid).subscribe((res: any) => {
 
-      if (!res.videos || (res.videos && res.videos.length == 0)) {
-        alert('No recording videos were found');
-        this.blockUI.stop();
-        return false;
+          if (!res.videos || (res.videos && res.videos.length == 0)) {
+            alert('No recording videos were found');
+            this.blockUI.stop();
+            return false;
+          }
+
+          this.selectedTimeFrameVideos = res.videos;
+          let start = res.videos[0].time;
+          let end = res.videos[0].end;
+          this.getDetectionsByTimeFrame(start, end);
+        });
       }
 
-      this.selectedTimeFrameVideos = res.videos;
-      let start = res.videos[0].time;
-      let end = res.videos[0].end;
-      this.getDetectionsByTimeFrame(start, end);
     });
     this.getAllMonitors();
   }
@@ -142,7 +152,7 @@ export class DashboardComponent implements OnInit {
     this.daterange.label = value.label;
 
     this.blockUI.start('Loading...');
-    this.dashboardService.getFramesByDate(this.daterange.start, this.daterange.end).subscribe((res: any) => {
+    this.dashboardService.getFramesByDate(this.daterange.start, this.daterange.end, this.selectedMonitor.mid).subscribe((res: any) => {
       this.emotionModel = [];
       if (res.videos.length == 0) {
         alert('No recording videos were found');

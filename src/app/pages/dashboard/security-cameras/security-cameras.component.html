@@ -15,7 +15,7 @@
   <nb-card-body style="text-align: center">
     <div style="height: 480px;width: 640px; margin: auto;position: relative" class="video-container">
       <!--<img class="camera" [src]="selectedCamera.source" alt="">-->
-      <video #vid id="myVideo" style="position: relative;object-fit: cover;" [src]="currentCamera" width="100%" height="100%"
+      <video #vid id="myVideo" style="position: relative;object-fit: cover;" controls [src]="currentCamera" width="100%" height="100%"
              controls="controls">
         Your browser does not support HTML5 video.
       </video>
