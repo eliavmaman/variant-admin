@@ -10,6 +10,10 @@ import {DaterangePickerComponent} from 'ng2-daterangepicker';
 import * as $ from "jquery";
 import {IMultiSelectOption, IMultiSelectSettings} from "angular-2-dropdown-multiselect";
 import * as _ from 'lodash';
+import {NbColorHelper} from "@nebular/theme";
+import {NbThemeService} from "@nebular/theme";
+import {OnDestroy} from "@angular/core";
+import {NbJSThemeVariable} from "@nebular/theme/services/js-themes/theme.options";
 
 
 @Component({
@@ -17,7 +21,7 @@ import * as _ from 'lodash';
   styleUrls: ['./dashboard.component.scss'],
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   @ViewChild(DaterangePickerComponent)
   private picker: DaterangePickerComponent;
   @BlockUI() blockUI: NgBlockUI;
@@ -25,8 +29,8 @@ export class DashboardComponent implements OnInit {
   summaryDescription: string = '';
   totalCriteriaCount: number = 0;
   emotions: any[] = ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'];
-  ageRanges: any[] = ['All', 'None', '0-20', '20-40', '40+'];
-  gender: any[] = ['All', 'None', 'Male', 'Female'];
+  ageRanges: any[] = ['0-9', '10-19', '20-29', '30-39', '40-49', '50+'];
+  gender: any[] = ['Male', 'Female'];
   criteria = {gender: 'All', emotion: 'All', ageRanges: 'All'};
   chartsDummyGlobalData = {
     gender: [],
@@ -60,9 +64,53 @@ export class DashboardComponent implements OnInit {
     timePicker24Hour: true,
     alwaysShowCalendars: false
   };
+  themeSubscription: any;
+  colors: NbJSThemeVariable;
+  genderCamera = {
+    labels: this.gender,
+    datasets: [],
+  };
 
-  constructor(private dashboardService: DashboardService, private zone: NgZone, private socketService: SocketService) {
 
+
+  emotionCamera = {
+    labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'],
+    datasets: [{
+      data: [65, 59, 80, 81, 56, 55, 40],
+      label: 'Happy',
+      backgroundColor: NbColorHelper.hexToRgbA('#9ACD32', 0.3),
+      borderColor: '#9ACD32',
+    }, {
+      data: [28, 48, 40, 19, 86, 27, 90],
+      label: 'Neutral',
+      backgroundColor: NbColorHelper.hexToRgbA('#0000ff', 0.3),
+      borderColor: '#0000ff',
+    }],
+    // datasets: [{
+    //   data: this.chartsDummyGlobalData.emotion,
+    // }],
+  };
+  ageCamera:any;
+
+  constructor(private dashboardService: DashboardService, private zone: NgZone, private theme: NbThemeService) {
+    this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
+      this.colors = config.variables;
+      this.ageCamera = {
+        labels: this.ageRanges,
+        datasets: [{
+          data: [65, 59, 80, 81, 56, 55, 40],
+          label: 'Male',
+          backgroundColor: NbColorHelper.hexToRgbA(this.colors.info, 1)
+        }, {
+          data: [28, 48, 40, 19, 86, 27, 90],
+          label: 'Female',
+          backgroundColor:  NbColorHelper.hexToRgbA(this.colors.danger, 1)
+        }],
+        // datasets: [{
+        //   data: this.chartsDummyGlobalData.age
+        // }],
+      };
+    });
   }
 
   ngOnInit() {
@@ -74,24 +122,26 @@ export class DashboardComponent implements OnInit {
         id: em,
         name: em
       });
+
+
     })
 
-    this.liveCountInterval = setInterval(() => {
-      this.dashboardService.getLiveCount().subscribe((res: any) => {
-        let detections = res;
-
-        let peoples = [];
-        detections.forEach((d) => {
-          d.detections.forEach((det) => {
-            if (peoples.indexOf(det.object) == -1) {
-              peoples.push(det.object);
-            }
-          });
-        });
-
-        this.liveCount = peoples.length;
-      })
-    }, 10000);
+    // this.liveCountInterval = setInterval(() => {
+    //   this.dashboardService.getLiveCount().subscribe((res: any) => {
+    //     let detections = res;
+    //
+    //     let peoples = [];
+    //     detections.forEach((d) => {
+    //       d.detections.forEach((det) => {
+    //         if (peoples.indexOf(det.object) == -1) {
+    //           peoples.push(det.object);
+    //         }
+    //       });
+    //     });
+    //
+    //     this.liveCount = peoples.length;
+    //   })
+    // }, 10000);
   }
 
   ngAfterViewInit() {
@@ -100,29 +150,29 @@ export class DashboardComponent implements OnInit {
     this.picker.datePicker.setStartDate(from.format('DD-MM-YYYY HH:mm'));
 
     this.picker.datePicker.setEndDate(to.format('DD-MM-YYYY HH:mm'));
-    this.blockUI.start('Loading...');
-    this.dashboardService.getAllMonitors().subscribe((res: any) => {
-      this.selectedMonitor = _.find(res, (m) => {
-        return m.mid == 'BQ5X7YbmUj'
-      });
-      if (this.selectedMonitor) {
-        this.dashboardService.getFramesByDate(from, to, this.selectedMonitor.mid).subscribe((res: any) => {
-
-          if (!res.videos || (res.videos && res.videos.length == 0)) {
-            alert('No recording videos were found');
-            this.blockUI.stop();
-            return false;
-          }
-
-          this.selectedTimeFrameVideos = res.videos;
-          let start = res.videos[0].time;
-          let end = res.videos[0].end;
-          this.getDetectionsByTimeFrame(start, end);
-        });
-      }
-
-    });
-    this.getAllMonitors();
+    //this.blockUI.start('Loading...');
+    // this.dashboardService.getAllMonitors().subscribe((res: any) => {
+    //   this.selectedMonitor = _.find(res, (m) => {
+    //     return m.mid == 'BQ5X7YbmUj'
+    //   });
+    //   if (this.selectedMonitor) {
+    //     this.dashboardService.getFramesByDate(from, to, this.selectedMonitor.mid).subscribe((res: any) => {
+    //
+    //       if (!res.videos || (res.videos && res.videos.length == 0)) {
+    //         alert('No recording videos were found');
+    //         this.blockUI.stop();
+    //         return false;
+    //       }
+    //
+    //       this.selectedTimeFrameVideos = res.videos;
+    //       let start = res.videos[0].time;
+    //       let end = res.videos[0].end;
+    //       this.getDetectionsByTimeFrame(start, end);
+    //     });
+    //   }
+    //
+    // });
+    // this.getAllMonitors();
   }
 
   getAllMonitors() {
@@ -329,25 +379,25 @@ export class DashboardComponent implements OnInit {
         ];
 
         this.genderCamera = {
-          labels: ['Male', 'Female'],
+          labels: this.gender,
           datasets: [{
             data: this.chartsDummyGlobalData.gender
           }],
         };
 
-        this.ageCamera = {
-          labels: ['0-20', '20-40', '40+'],
-          datasets: [{
-            data: this.chartsDummyGlobalData.age
-          }],
-        };
-
-        this.emotionCamera = {
-          labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'],
-          datasets: [{
-            data: this.chartsDummyGlobalData.emotion,
-          }],
-        };
+        // this.ageCamera = {
+        //   labels: this.ageRanges,
+        //   datasets: [{
+        //     data: this.chartsDummyGlobalData.age
+        //   }],
+        // };
+        //
+        // this.emotionCamera = {
+        //   labels: this.emotions,
+        //   datasets: [{
+        //     data: this.chartsDummyGlobalData.emotion
+        //   }],
+        // };
 
         this.applyCriteria();
 
@@ -476,24 +526,7 @@ export class DashboardComponent implements OnInit {
   ];
 
   selectedCamera: any = this.cameras[0].id;
-  genderCamera = {
-    labels: ['Male', 'Female'],
-    datasets: [{
-      data: this.chartsDummyGlobalData.gender
-    }],
-  };
-  ageCamera = {
-    labels: this.ageRanges,
-    datasets: [{
-      data: this.chartsDummyGlobalData.age
-    }],
-  };
-  emotionCamera = {
-    labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'],
-    datasets: [{
-      data: this.chartsDummyGlobalData.emotion,
-    }],
-  };
+
 
   onEmotionChange() {
     console.log(this.emotionModel);
@@ -523,24 +556,24 @@ export class DashboardComponent implements OnInit {
       this.getRandomNumber(),
       this.getRandomNumber()];
 
-    this.genderCamera = {
-      labels: ['Male', 'Female'],
-      datasets: [{
-        data: this.chartsDummyGlobalData.gender
-      }],
-    };
-    this.ageCamera = {
-      labels: ['0-20', '20-40', '40+'],
-      datasets: [{
-        data: this.chartsDummyGlobalData.age
-      }],
-    };
-    this.emotionCamera = {
-      labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'],
-      datasets: [{
-        data: this.chartsDummyGlobalData.emotion,
-      }],
-    };
+    // this.genderCamera = {
+    //   labels: ['Male', 'Female'],
+    //   datasets: [{
+    //     data: this.chartsDummyGlobalData.gender
+    //   }],
+    // };
+    // this.ageCamera = {
+    //   labels: ['0-20', '20-40', '40+'],
+    //   datasets: [{
+    //     data: this.chartsDummyGlobalData.age
+    //   }],
+    // };
+    // this.emotionCamera = {
+    //   labels: ['Angry', 'Disgust', 'Fear', 'Happy', 'Neutral', 'Sad', 'Surprise'],
+    //   datasets: [{
+    //     data: this.chartsDummyGlobalData.emotion,
+    //   }],
+    // };
 
     this.chartsDummyGlobalData.total = this.getTotalCount()
 
@@ -560,6 +593,9 @@ export class DashboardComponent implements OnInit {
     return (t_emotion + t_age + t_gender);
   }
 
+  ngOnDestroy(): void {
+    this.themeSubscription.unsubscribe();
+  }
 
 }
 

@@ -1,13 +1,16 @@
-import { Component, OnDestroy } from '@angular/core';
-import { NbThemeService, NbColorHelper } from '@nebular/theme';
+import {Component, OnDestroy} from '@angular/core';
+import {NbThemeService, NbColorHelper} from '@nebular/theme';
+import {Input} from '@angular/core';
 
 @Component({
   selector: 'ngx-chartjs-bar',
   template: `
-    <chart type="bar" [data]="data" [options]="options"></chart>
+    <chart type="bar" [data]="chartData" [options]="options"></chart>
   `,
 })
 export class ChartjsBarComponent implements OnDestroy {
+  @Input() chartData: any;
+
   data: any;
   options: any;
   themeSubscription: any;
@@ -21,7 +24,7 @@ export class ChartjsBarComponent implements OnDestroy {
       this.data = {
         labels: ['2006', '2007', '2008', '2009', '2010', '2011', '2012'],
         datasets: [{
-          data: [65, 59, 80, 81, 56, 55, 40],
+          data: [1065, 59, 80, 81, 56, 55, 40],
           label: 'Series A',
           backgroundColor: NbColorHelper.hexToRgbA(colors.primaryLight, 0.8),
         }, {

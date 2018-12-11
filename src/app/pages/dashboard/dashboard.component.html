@@ -3,7 +3,39 @@
     font-size: 120px;
     font-family: "Roboto";
   }
+
+  .component .fas {
+    font-size: 40px;
+  }
+
+  .box-header {
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 5px;
+  }
+
+  .demografics .totals i {
+    font-size: 40px;
+  }
+
+  .demografics .totals i.fa-male {
+    color: #0088ff;
+  }
+
+  .demografics .totals i.fa-female {
+    color: #ff386a;
+  }
+
+  .demografics .totals .digit {
+    margin-left: 10px;
+  }
+
+  .digit {
+    font-size: 40px;
+  }
+
 </style>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
+      integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 <div class="row">
   <div class="col-sm-3">
     <label>Please select date range</label>
@@ -49,14 +81,16 @@
       <div class="col-3">
         <label>Please select gender</label>
         <select class="form-control" [(ngModel)]="criteria.gender">
-
+          <option>All</option>
+          <option>None</option>
           <option *ngFor="let g of gender" value="{{g}}" [attr.data-index]="i">{{g}}</option>
         </select>
       </div>
       <div class="col-3">
         <label>Please select emotion</label>
         <div>
-          <ss-multiselect-dropdown [settings]="settings" [options]="emotionOptions" [(ngModel)]="emotionModel" ></ss-multiselect-dropdown>
+          <ss-multiselect-dropdown [settings]="settings" [options]="emotionOptions"
+                                   [(ngModel)]="emotionModel"></ss-multiselect-dropdown>
         </div>
         <!--<select class="form-control" [(ngModel)]="criteria.emotion">-->
 
@@ -68,7 +102,8 @@
       <div class="col-3">
         <label>Please select age range</label>
         <select class="form-control" [(ngModel)]="criteria.ageRanges">
-
+          <option>All</option>
+          <option>None</option>
           <option *ngFor="let a of ageRanges; let i = index" [attr.data-index]="i" value="{{a}}">
             {{a}}
           </option>
@@ -87,64 +122,164 @@
 
 <div class="row">
   <div class="col-lg-12 col-lg-12 col-md-7">
-    <ngx-security-cameras id="sec-camera"[monitors]="monitors" [detections]="detections" [selectedCamera]="selectedCamera"
+    <ngx-security-cameras id="sec-camera" [monitors]="monitors" [detections]="detections"
+                          [selectedCamera]="selectedCamera"
                           [selectedTimeFrameVideos]="selectedTimeFrameVideos"></ngx-security-cameras>
   </div>
 </div>
 
 <div class="row" style="margin-top: 10px">
-  <div class="col-lg-4">
-    <nb-card>
-      <nb-card-header>Gender
-        <div class="row" [(ngModel)]="gender" style="float: right"> Total: Male:{{this.chartsDummyGlobalData.gender[0]}}
-          Female:{{this.chartsDummyGlobalData.gender[1]}}
+  <div class="col-sm-8">
+    <nb-card class="demografics">
+      <nb-card-header>
+        Demographics
+      </nb-card-header>
+      <nb-card-body>
+        <div class="row d-flex ">
+          <div class="col-sm-4 d-flex flex-column totals">
+            <div class="text-left d-flex col">
+              <div style="margin: auto">
+                <i class="fas first fa-male"></i>
+                <span class="digit">10</span>
+              </div>
+            </div>
+            <div class="text-left d-flex col">
+              <div style="margin: auto">
+                <i class="fas fa-female"></i>
+                <span class="digit">10</span>
+              </div>
+            </div>
+
+          </div>
+          <div class="col-sm-8  d-flex">
+            <div style="width:100%;height: 100%;">
+              <!--<ngx-d3-bar></ngx-d3-bar> style="overflow: hidden;margin: auto"-->
+              <ngx-chartjs-bar [chartData]="ageCamera"></ngx-chartjs-bar>
+            </div>
+
+          </div>
         </div>
+
+      </nb-card-body>
+    </nb-card>
+  </div>
+  <div class="col-sm-4">
+    <nb-card class="demografics">
+      <nb-card-header>
+        Total Faces
+        <small>(All this hour)</small>
       </nb-card-header>
       <nb-card-body>
-        <ngx-chartjs-pie #cam1 [chartData]="genderCamera"></ngx-chartjs-pie>
+        <div class="row" style="height: 150px;padding-top: 30px">
+
+          <div class="col-sm-6 text-center" style="border-right: 1px dashed #fff; ">
+            <h3>Analyzed</h3>
+            <div class="digit">10</div>
+          </div>
+          <div class="col-sm-6 text-center">
+            <h3>Unique</h3>
+            <div class="digit">1234</div>
+          </div>
+
+        </div>
       </nb-card-body>
     </nb-card>
   </div>
-  <div class="col-lg-4">
-    <nb-card>
-      <nb-card-header>Age</nb-card-header>
-      <nb-card-body>
-        <ngx-chartjs-pie [chartData]="ageCamera"></ngx-chartjs-pie>
-      </nb-card-body>
-    </nb-card>
-  </div>
-  <div class="col-lg-4">
-    <nb-card>
-      <nb-card-header>Live count
-        <small> (last 5 minutes)</small>
+  <div class="col-sm-12">
+    <nb-card class="demografics">
+      <nb-card-header>
+        Average Crowd Emotion
+        <small>(last few minutes)</small>
       </nb-card-header>
-      <nb-card-body class="text-center">
-
-        <span class="total-count-digit">{{liveCount}}</span>
-      </nb-card-body>
-    </nb-card>
-  </div>
-  <div class="col-lg-12">
-    <nb-card>
-      <nb-card-header>Emotion</nb-card-header>
       <nb-card-body>
+        <div class="row">
+          <div style="width:800px;margin: auto">
+            <div class="col">
+              <ngx-chartjs-line width="100%" [chartData]="emotionCamera"></ngx-chartjs-line>
+            </div>
+          </div>
 
+        </div>
 
-        <ngx-chartjs-pie [chartData]="emotionCamera"></ngx-chartjs-pie>
+        <div class="row">
+          <div class="col d-flex justify-content-center">
+            <img src="assets/images/Angry-emoji.png" alt="">
+          </div>
+          <div class="col d-flex justify-content-center">
+            <img src="assets/images/Disgust-emoji.png" alt="">
+          </div>
+          <div class="col d-flex justify-content-center">
+            <img src="assets/images/Fear-emoji.png" alt="">
+          </div>
+          <div class="col d-flex justify-content-center">
+            <img src="assets/images/Happy-emoji.png" alt="">
+          </div>
+          <div class="col d-flex justify-content-center">
+            <img src="assets/images/Natural-emoji.png" alt="">
+          </div>
+          <div class="col d-flex justify-content-center">
+            <img src="assets/images/Sad-emoji.png" alt="">
+          </div>
+          <div class="col d-flex justify-content-center">
+            <img src="assets/images/Surprise-emoji.png" alt="">
+          </div>
+        </div>
       </nb-card-body>
     </nb-card>
   </div>
+  <!--<div class="col-lg-4 d-none">-->
+  <!--<nb-card>-->
+  <!--<nb-card-header>Gender-->
+  <!--<div class="row" [(ngModel)]="gender" style="float: right"> Total: Male:{{this.chartsDummyGlobalData.gender[0]}}-->
+  <!--Female:{{this.chartsDummyGlobalData.gender[1]}}-->
+  <!--</div>-->
+  <!--</nb-card-header>-->
+  <!--<nb-card-body>-->
+  <!--<ngx-chartjs-pie #cam1 [chartData]="genderCamera"></ngx-chartjs-pie>-->
+  <!--</nb-card-body>-->
+  <!--</nb-card>-->
+  <!--</div>-->
+  <!--<div class="col-lg-4 d-none">-->
+  <!--<nb-card>-->
+  <!--<nb-card-header>Age</nb-card-header>-->
+  <!--<nb-card-body>-->
+  <!--<ngx-chartjs-pie [chartData]="ageCamera"></ngx-chartjs-pie>-->
+  <!--</nb-card-body>-->
+  <!--</nb-card>-->
+  <!--</div>-->
+  <!--<div class="col-lg-4 d-none">-->
+  <!--<nb-card>-->
+  <!--<nb-card-header>Live count-->
+  <!--<small> (last 5 minutes)</small>-->
+  <!--</nb-card-header>-->
+  <!--<nb-card-body class="text-center">-->
 
-  <div class="col-lg-12" [hidden]="true">
-    <nb-card>
-      <nb-card-header>Account</nb-card-header>
-      <nb-card-body>
+  <!--<span class="total-count-digit">{{liveCount}}</span>-->
+  <!--</nb-card-body>-->
+  <!--</nb-card>-->
+  <!--</div>-->
+  <!--<div class="col-lg-12 d-none">-->
+  <!--<nb-card>-->
+  <!--<nb-card-header>Emotion</nb-card-header>-->
+  <!--<nb-card-body>-->
 
 
-        <ngx-chartjs-bar-horizontal></ngx-chartjs-bar-horizontal>
-      </nb-card-body>
-    </nb-card>
-  </div>
+  <!--<ngx-chartjs-pie [chartData]="emotionCamera"></ngx-chartjs-pie>-->
+  <!--</nb-card-body>-->
+  <!--</nb-card>-->
+  <!--</div>-->
+
+
+  <!--<div class="col-lg-12" [hidden]="true">-->
+  <!--<nb-card>-->
+  <!--<nb-card-header>Account</nb-card-header>-->
+  <!--<nb-card-body>-->
+
+
+  <!--<ngx-chartjs-bar-horizontal></ngx-chartjs-bar-horizontal>-->
+  <!--</nb-card-body>-->
+  <!--</nb-card>-->
+  <!--</div>-->
 
 </div>
 
