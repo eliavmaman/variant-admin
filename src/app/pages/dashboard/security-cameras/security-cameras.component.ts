@@ -155,6 +155,7 @@ export class SecurityCamerasComponent {
   }
 
   setSelectedCamera(cam_id) {
+    if (!cam_id) return;
     var founded = _.find(this.cameras, (c) => {
       return c.id.toString() == cam_id.toString();
     });

@@ -37,12 +37,22 @@
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css"
       integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
 <div class="row">
-  <div class="col-sm-3">
+  <div class="col-3">
+    <label>Please select Camera</label>
+    <select class="form-control" [(ngModel)]="selectedCamera">
+      <option *ngFor="let c of monitors; let i = index" [attr.data-index]="i" [ngValue]="c">
+        {{c.name}}
+      </option>
+    </select>
+
+
+  </div>
+  <div class="col-3">
     <label>Please select date range</label>
     <input type="text" class="form-control" name="daterangeInput" daterangepicker [options]="options"
            (selected)="selectedDate($event, daterange)"/>
   </div>
-  <div class="col-9">
+  <div class="col-12">
     <label>Summary</label>
     <div class="card card-body" style="    height: 45px;
     margin-top: 2px;
@@ -101,10 +111,10 @@
       </div>
       <div class="col-3">
         <label>Please select age range</label>
-        <select class="form-control" [(ngModel)]="criteria.ageRanges">
+        <select class="form-control" [(ngModel)]="criteria.ages">
           <option>All</option>
           <option>None</option>
-          <option *ngFor="let a of ageRanges; let i = index" [attr.data-index]="i" value="{{a}}">
+          <option *ngFor="let a of ages; let i = index" [attr.data-index]="i" value="{{a}}">
             {{a}}
           </option>
         </select>
@@ -154,7 +164,7 @@
           <div class="col-sm-8  d-flex">
             <div style="width:100%;height: 100%;">
               <!--<ngx-d3-bar></ngx-d3-bar> style="overflow: hidden;margin: auto"-->
-              <ngx-chartjs-bar [chartData]="ageCamera"></ngx-chartjs-bar>
+              <ngx-chartjs-bar [chartData]="agesChartData"></ngx-chartjs-bar>
             </div>
 
           </div>
@@ -195,7 +205,7 @@
         <div class="row">
           <div style="width:800px;margin: auto">
             <div class="col">
-              <ngx-chartjs-line width="100%" [chartData]="emotionCamera"></ngx-chartjs-line>
+              <ngx-chartjs-line width="100%" [chartData]="emotionChartData"></ngx-chartjs-line>
             </div>
           </div>
 
