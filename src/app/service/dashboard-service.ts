@@ -88,7 +88,7 @@ export class DashboardService {
         "fatal_max": "0",
         "notes": "",
         "dir": "",
-        "auto_host_enable": "1",
+        "auto_host_enable": "0",
         "auto_host": "",
         "rtsp_transport": "tcp",
         "muser": "",

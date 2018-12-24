@@ -39,7 +39,7 @@
 <div class="row">
   <div class="col-3">
     <label>Please select Camera</label>
-    <select class="form-control" [(ngModel)]="selectedCamera">
+    <select class="form-control" [(ngModel)]="selectedCamera" (change)="onCameraSelected()">
       <option *ngFor="let c of monitors; let i = index" [attr.data-index]="i" [ngValue]="c">
         {{c.name}}
       </option>
@@ -72,29 +72,19 @@
     </a>
   </div>
 </div>
-<div class="row">
-  <!--<div class="col-4">-->
-  <!--<label>Please select Camera</label>-->
-  <!--<select class="form-control" [(ngModel)]="selectedCamera" (ngModelChange)="onCameraSelected($event)">-->
-  <!--<option *ngFor="let c of cameras; let i = index" [attr.data-index]="i" value="{{c.id}}">-->
-  <!--{{c.name}}-->
-  <!--</option>-->
-  <!--</select>-->
 
-
-  <!--</div>-->
-
-</div>
 <div class="collapse" id="collapseExample">
   <div class="card card-body">
     <div class="row">
       <div class="col-3">
         <label>Please select gender</label>
-        <select class="form-control" [(ngModel)]="criteria.gender">
-          <option>All</option>
-          <option>None</option>
-          <option *ngFor="let g of gender" value="{{g}}" [attr.data-index]="i">{{g}}</option>
-        </select>
+        <ss-multiselect-dropdown [settings]="settings" [options]="genderOptions"
+                                 [(ngModel)]="gendersModel"></ss-multiselect-dropdown>
+        <!--<select class="form-control" [(ngModel)]="criteria.gender">-->
+          <!--<option>All</option>-->
+          <!--<option>None</option>-->
+          <!--<option *ngFor="let g of gender" value="{{g}}" [attr.data-index]="i">{{g}}</option>-->
+        <!--</select>-->
       </div>
       <div class="col-3">
         <label>Please select emotion</label>
@@ -102,22 +92,19 @@
           <ss-multiselect-dropdown [settings]="settings" [options]="emotionOptions"
                                    [(ngModel)]="emotionModel"></ss-multiselect-dropdown>
         </div>
-        <!--<select class="form-control" [(ngModel)]="criteria.emotion">-->
 
-        <!--<option *ngFor="let e of emotions; let i = index" [attr.data-index]="i" value="{{e}}">-->
-        <!--{{e}}-->
-        <!--</option>-->
-        <!--</select>-->
       </div>
       <div class="col-3">
         <label>Please select age range</label>
-        <select class="form-control" [(ngModel)]="criteria.ages">
-          <option>All</option>
-          <option>None</option>
-          <option *ngFor="let a of ages; let i = index" [attr.data-index]="i" value="{{a}}">
-            {{a}}
-          </option>
-        </select>
+        <ss-multiselect-dropdown [settings]="settings" [options]="ageOptions"
+                                 [(ngModel)]="agesModel"></ss-multiselect-dropdown>
+        <!--<select class="form-control" [(ngModel)]="criteria.ages">-->
+          <!--<option>All</option>-->
+          <!--<option>None</option>-->
+          <!--<option *ngFor="let a of ages; let i = index" [attr.data-index]="i" value="{{a}}">-->
+            <!--{{a}}-->
+          <!--</option>-->
+        <!--</select>-->
       </div>
       <div class="col-3">
         <label style="color: transparent;">AAAA</label>
@@ -128,8 +115,6 @@
     </div>
   </div>
 </div>
-
-
 <div class="row">
   <div class="col-lg-12 col-lg-12 col-md-7">
     <ngx-security-cameras id="sec-camera" [monitors]="monitors" [detections]="detections"
@@ -237,103 +222,7 @@
       </nb-card-body>
     </nb-card>
   </div>
-  <!--<div class="col-lg-4 d-none">-->
-  <!--<nb-card>-->
-  <!--<nb-card-header>Gender-->
-  <!--<div class="row" [(ngModel)]="gender" style="float: right"> Total: Male:{{this.chartsDummyGlobalData.gender[0]}}-->
-  <!--Female:{{this.chartsDummyGlobalData.gender[1]}}-->
-  <!--</div>-->
-  <!--</nb-card-header>-->
-  <!--<nb-card-body>-->
-  <!--<ngx-chartjs-pie #cam1 [chartData]="genderCamera"></ngx-chartjs-pie>-->
-  <!--</nb-card-body>-->
-  <!--</nb-card>-->
-  <!--</div>-->
-  <!--<div class="col-lg-4 d-none">-->
-  <!--<nb-card>-->
-  <!--<nb-card-header>Age</nb-card-header>-->
-  <!--<nb-card-body>-->
-  <!--<ngx-chartjs-pie [chartData]="ageCamera"></ngx-chartjs-pie>-->
-  <!--</nb-card-body>-->
-  <!--</nb-card>-->
-  <!--</div>-->
-  <!--<div class="col-lg-4 d-none">-->
-  <!--<nb-card>-->
-  <!--<nb-card-header>Live count-->
-  <!--<small> (last 5 minutes)</small>-->
-  <!--</nb-card-header>-->
-  <!--<nb-card-body class="text-center">-->
-
-  <!--<span class="total-count-digit">{{liveCount}}</span>-->
-  <!--</nb-card-body>-->
-  <!--</nb-card>-->
-  <!--</div>-->
-  <!--<div class="col-lg-12 d-none">-->
-  <!--<nb-card>-->
-  <!--<nb-card-header>Emotion</nb-card-header>-->
-  <!--<nb-card-body>-->
-
-
-  <!--<ngx-chartjs-pie [chartData]="emotionCamera"></ngx-chartjs-pie>-->
-  <!--</nb-card-body>-->
-  <!--</nb-card>-->
-  <!--</div>-->
-
-
-  <!--<div class="col-lg-12" [hidden]="true">-->
-  <!--<nb-card>-->
-  <!--<nb-card-header>Account</nb-card-header>-->
-  <!--<nb-card-body>-->
-
-
-  <!--<ngx-chartjs-bar-horizontal></ngx-chartjs-bar-horizontal>-->
-  <!--</nb-card-body>-->
-  <!--</nb-card>-->
-  <!--</div>-->
 
 </div>
 
 
-<!--<div class="row">-->
-<!--<div class="col-xxxl-3 col-md-6" *ngFor="let statusCard of statusCards">-->
-<!--<ngx-status-card [title]="statusCard.title"-->
-<!--[type]="statusCard.type">-->
-<!--<i [ngClass]="statusCard.iconClass"></i>-->
-<!--</ngx-status-card>-->
-<!--</div>-->
-<!--</div>-->
-
-<!--<div class="row">-->
-<!--<div class="col-xxxl-3 col-xxl-4 col-lg-5 col-md-6">-->
-<!--<ngx-temperature></ngx-temperature>-->
-<!--</div>-->
-
-<!--<div class="col-xxxl-9 col-xxl-8 col-lg-7 col-md-6">-->
-<!--<ngx-electricity></ngx-electricity>-->
-<!--</div>-->
-<!--</div>-->
-
-<!--<div class="row">-->
-<!--<div class="col-xxxl-9 col-xl-12">-->
-<!--<ngx-rooms></ngx-rooms>-->
-<!--</div>-->
-
-<!--<div class="col-xxxl-3 col-xxl-4 col-lg-7 col-md-6">-->
-<!--<ngx-contacts></ngx-contacts>-->
-<!--</div>-->
-
-<!--<div class="col-xxxl-3 col-xxl-4 col-lg-5 col-md-6">-->
-<!--<ngx-solar [chartValue]="72"></ngx-solar>-->
-
-<!--<ngx-kitten></ngx-kitten>-->
-<!--</div>-->
-
-<!--<div class="col-xxxl-3 col-xxl-4 col-md-5">-->
-<!--<ngx-traffic></ngx-traffic>-->
-<!--<ngx-weather></ngx-weather>-->
-<!--</div>-->
-
-<!--<div class="col-xxxl-6 col-xxl-12 col-md-7">-->
-<!--<ngx-security-cameras></ngx-security-cameras>-->
-<!--</div>-->
-<!--</div>-->

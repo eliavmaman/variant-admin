@@ -37,7 +37,9 @@ export class SocketService {
   }
 
   connectToShinobi() {
-    this.socket = io('https://51.15.77.204/');
+    this.socket = io('https://51.15.77.204/',{
+      transports: ['websocket']
+    });
 
     this.getShinobiAuth().subscribe((res: any) => {
       let $user = res['$user'];
