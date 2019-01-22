@@ -21,7 +21,7 @@ export class SecurityCamerasComponent {
   @Input() monitors: any[];
   @Input() selectedTimeFrameVideos: string[] = [];
   @ViewChild('vid') video: any;
-  currentCamera: string;
+  currentCamera: string = 'https://cdn.shinobi.video/videos/people.mp4';
   selectedStream: string = '';
   frameCounter = 0;
   detectionDetails: any[] = [];
@@ -57,81 +57,81 @@ export class SecurityCamerasComponent {
     //Every second the video playing it get the relevant frame.
     this.video.nativeElement.ontimeupdate = () => {
 
-      let sec = parseInt(this.video.nativeElement.currentTime);
-
-      //get cuurent frame
-      let currentDetection: any = this.detections[sec];
-
-      //get monitor details or default width and height if not exsit
-      //let $monitorDetails = //(currentDetection.camera_id && this.monitors[currentDetection.camera_id]) ? JSON.parse(this.monitors[currentDetection.camera_id].details) :
-      let $monitorDetails = {
-        detector_scale_x: 640,
-        detector_scale_y: 480
-      };
-
-
-      let widthRatio = this.bWidth / $monitorDetails.detector_scale_x
-      let heightRatio = this.bHeight / $monitorDetails.detector_scale_y
-
-      this.detectionDetails = this.getDetectionDetails(this.detectionDetails, sec);
-      this.frameCounter++;
-
-      console.log(this.$box.find('.bb').length)
-      console.log()
-
-
-      this.$box.find('.bb').remove();
-      let div = '';
-      for (let i = 0; i < this.detectionDetails.length; i++) {
-        if (this.detectionDetails[i].conf > 0.85) {
-          let scaledLeft = this.detectionDetails[i].bb[0] * widthRatio
-          let scaledTop = this.detectionDetails[i].bb[1] * heightRatio
-          let scaledWidth = this.detectionDetails[i].bb[2] * widthRatio
-          let scaledHeight = this.detectionDetails[i].bb[3] * heightRatio
-          div += '<div class="bb" style="width:' + scaledWidth +
-            'px;height:' + scaledHeight + 'px;top:' + scaledTop + 'px;left:' + scaledLeft + 'px;">' +
-            '<div style="position: absolute;top:-20px;background-color: green">' + this.detectionDetails[i].conf + '</div>' +
-            '</div>';
-        }
-
-      }
-      this.$box.append(div);
+      // let sec = parseInt(this.video.nativeElement.currentTime);
+      //
+      // //get cuurent frame
+      // let currentDetection: any = this.detections[sec];
+      //
+      // //get monitor details or default width and height if not exsit
+      // //let $monitorDetails = //(currentDetection.camera_id && this.monitors[currentDetection.camera_id]) ? JSON.parse(this.monitors[currentDetection.camera_id].details) :
+      // let $monitorDetails = {
+      //   detector_scale_x: 640,
+      //   detector_scale_y: 480
+      // };
+      //
+      //
+      // let widthRatio = this.bWidth / $monitorDetails.detector_scale_x
+      // let heightRatio = this.bHeight / $monitorDetails.detector_scale_y
+      //
+      // this.detectionDetails = this.getDetectionDetails(this.detectionDetails, sec);
+      // this.frameCounter++;
+      //
+      // console.log(this.$box.find('.bb').length)
+      // console.log()
+      //
+      //
+      // this.$box.find('.bb').remove();
+      // let div = '';
+      // for (let i = 0; i < this.detectionDetails.length; i++) {
+      //   if (this.detectionDetails[i].conf > 0.85) {
+      //     let scaledLeft = this.detectionDetails[i].bb[0] * widthRatio
+      //     let scaledTop = this.detectionDetails[i].bb[1] * heightRatio
+      //     let scaledWidth = this.detectionDetails[i].bb[2] * widthRatio
+      //     let scaledHeight = this.detectionDetails[i].bb[3] * heightRatio
+      //     div += '<div class="bb" style="width:' + scaledWidth +
+      //       'px;height:' + scaledHeight + 'px;top:' + scaledTop + 'px;left:' + scaledLeft + 'px;">' +
+      //       '<div style="position: absolute;top:-20px;background-color: green">' + this.detectionDetails[i].conf + '</div>' +
+      //       '</div>';
+      //   }
+      //
+      // }
+      // this.$box.append(div);
 
     }
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.selectedCamera) {
-      this.setSelectedCamera(changes.selectedCamera.currentValue);
-    }
-    if (changes.selectedTimeFrameVideos &&
-      (changes.selectedTimeFrameVideos.currentValue && changes.selectedTimeFrameVideos.previousValue) &&
-      changes.selectedTimeFrameVideos.currentValue[0] != changes.selectedTimeFrameVideos.previousValue[0]) {
-      this.selectedStream = '//51.15.77.204' + changes.selectedTimeFrameVideos.currentValue[0].href;
-
-      this.currentCamera = this.selectedStream;
-
-    }
-
-    if (changes.detections && (changes.detections.currentValue && changes.detections.previousValue)) {
-      this.frameCounter = 0;
-
-      // this.blockUI.stop();
-
-      if (this.detections.length == 0) {
-        return;
-      }
-      if (this.interval)
-        clearInterval(this.interval);
-
-      this.video.nativeElement.pause();
-      this.video.nativeElement.currentTime = 0;
-      this.video.nativeElement.play();
-
-      this.interval = setInterval(() => {
-
-      }, 1000);
-    }
+    // if (changes.selectedCamera) {
+    //   this.setSelectedCamera(changes.selectedCamera.currentValue);
+    // }
+    // if (changes.selectedTimeFrameVideos &&
+    //   (changes.selectedTimeFrameVideos.currentValue && changes.selectedTimeFrameVideos.previousValue) &&
+    //   changes.selectedTimeFrameVideos.currentValue[0] != changes.selectedTimeFrameVideos.previousValue[0]) {
+    //   this.selectedStream = '//51.15.77.204' + changes.selectedTimeFrameVideos.currentValue[0].href;
+    //
+    //   this.currentCamera = this.selectedStream;
+    //
+    // }
+    //
+    // if (changes.detections && (changes.detections.currentValue && changes.detections.previousValue)) {
+    //   this.frameCounter = 0;
+    //
+    //   // this.blockUI.stop();
+    //
+    //   if (this.detections.length == 0) {
+    //     return;
+    //   }
+    //   if (this.interval)
+    //     clearInterval(this.interval);
+    //
+    //   this.video.nativeElement.pause();
+    //   this.video.nativeElement.currentTime = 0;
+    //   this.video.nativeElement.play();
+    //
+    //   this.interval = setInterval(() => {
+    //
+    //   }, 1000);
+    // }
 
     // You can also use categoryId.previousValue and
     // categoryId.firstChange for comparing old and new values

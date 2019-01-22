@@ -176,7 +176,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const {from, to} = this.initiateDatePickers();
     this.daterange.start = from;
     this.daterange.end = to;
-    this.blockUI.start('Loading...');
+   // this.blockUI.start('Loading...');
 
     this.dashboardService.getAllMonitors().subscribe((res: any) => {
       if (!Array.isArray(res)) {
@@ -187,16 +187,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
       this.selectedCamera = this.monitors[0];
 
       if (this.selectedCamera) {
-        this.dashboardService.getFramesByDate(from, to, this.selectedCamera.mid).subscribe((res: any) => {
-
-          if (!res.videos || (res.videos && res.videos.length == 0)) {
-            alert('No recording videos were found for the selected time frame');
-            this.blockUI.stop();
-            return false;
-          }
-
-          this.getVideoFrames(res);
-        });
+        // this.dashboardService.getFramesByDate(from, to, this.selectedCamera.mid).subscribe((res: any) => {
+        //
+        //   if (!res.videos || (res.videos && res.videos.length == 0)) {
+        //     alert('No recording videos were found for the selected time frame');
+        //     this.blockUI.stop();
+        //     return false;
+        //   }
+        //
+        //   this.getVideoFrames(res);
+        // });
       }
 
     });
